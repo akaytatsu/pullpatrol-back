@@ -62,6 +62,21 @@ func (mr *MockIRepositoryUserMockRecorder) DeleteUser(arg0 interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockIRepositoryUser)(nil).DeleteUser), arg0)
 }
 
+// GetByID mocks base method.
+func (m *MockIRepositoryUser) GetByID(arg0 int) (*entity.EntityUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", arg0)
+	ret0, _ := ret[0].(*entity.EntityUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockIRepositoryUserMockRecorder) GetByID(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockIRepositoryUser)(nil).GetByID), arg0)
+}
+
 // GetByMail mocks base method.
 func (m *MockIRepositoryUser) GetByMail(arg0 string) (*entity.EntityUser, error) {
 	m.ctrl.T.Helper()

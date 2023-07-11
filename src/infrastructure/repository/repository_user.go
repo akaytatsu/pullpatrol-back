@@ -14,6 +14,11 @@ func NewUserPostgres(db *gorm.DB) *RepositoryUser {
 	return &RepositoryUser{db: db}
 }
 
+func (u *RepositoryUser) GetByID(id int) (user *entity.EntityUser, err error) {
+	err = u.db.Where("id = ?", id).First(&user).Error
+	return user, err
+}
+
 func (u *RepositoryUser) GetByMail(email string) (user *entity.EntityUser, err error) {
 	err = u.db.Where("email = ?", email).First(&user).Error
 

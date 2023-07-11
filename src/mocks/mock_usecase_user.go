@@ -62,6 +62,21 @@ func (mr *MockIUsecaseUserMockRecorder) Delete(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockIUsecaseUser)(nil).Delete), arg0)
 }
 
+// GetUserByToken mocks base method.
+func (m *MockIUsecaseUser) GetUserByToken(arg0 string) (*entity.EntityUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByToken", arg0)
+	ret0, _ := ret[0].(*entity.EntityUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByToken indicates an expected call of GetUserByToken.
+func (mr *MockIUsecaseUserMockRecorder) GetUserByToken(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByToken", reflect.TypeOf((*MockIUsecaseUser)(nil).GetUserByToken), arg0)
+}
+
 // LoginUser mocks base method.
 func (m *MockIUsecaseUser) LoginUser(arg0, arg1 string) (*entity.EntityUser, error) {
 	m.ctrl.T.Helper()
@@ -89,4 +104,18 @@ func (m *MockIUsecaseUser) Update(arg0 *entity.EntityUser) error {
 func (mr *MockIUsecaseUserMockRecorder) Update(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIUsecaseUser)(nil).Update), arg0)
+}
+
+// UpdatePassword mocks base method.
+func (m *MockIUsecaseUser) UpdatePassword(arg0 int, arg1, arg2, arg3 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePassword", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePassword indicates an expected call of UpdatePassword.
+func (mr *MockIUsecaseUserMockRecorder) UpdatePassword(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePassword", reflect.TypeOf((*MockIUsecaseUser)(nil).UpdatePassword), arg0, arg1, arg2, arg3)
 }

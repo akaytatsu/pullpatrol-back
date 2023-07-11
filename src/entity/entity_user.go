@@ -3,19 +3,8 @@ package entity
 import (
 	"time"
 
-	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
-
-const SECRET_KEY = "9an0afx$thw)k9#y*_d9-ch^r&a6ndi#x#dwu^52zbqw=hso(9"
-
-type SignedDetails struct {
-	ID        int
-	FirstName string
-	LastName  string
-	Email     string
-	jwt.StandardClaims
-}
 
 type EntityUser struct {
 	ID        int
@@ -78,65 +67,15 @@ func (u *EntityUser) GetValidated() error {
 	return nil
 }
 
-func (u *EntityUser) JWTTokenGenerator() (signedToken string, signedRefreshToken string, err error) {
-
-	claims := SignedDetails{
-		ID:        u.ID,
-		FirstName: u.FirstName,
-		LastName:  u.LastName,
-		Email:     u.Email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-		},
-	}
-
-	refreshClaims := SignedDetails{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24 * 7 * 365).Unix(),
-		},
-	}
-
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(SECRET_KEY))
-
+func (u *EntityUser) UpdatePassword(newPassword string) error {
+	hash, err := GeneratePassword(newPassword)
 	if err != nil {
-		return "", "", err
+		return err
 	}
 
-	refreshToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims).SignedString([]byte(SECRET_KEY))
+	u.Password = hash
 
-	if err != nil {
-		return "", "", err
-	}
-
-	return token, refreshToken, nil
-}
-
-func (u *EntityUser) ValidateToken(signedToken string) (claims *SignedDetails, err error) {
-	token, err := jwt.ParseWithClaims(
-		signedToken,
-		&SignedDetails{},
-		func(token *jwt.Token) (interface{}, error) {
-			return []byte(SECRET_KEY), nil
-		},
-	)
-
-	if err != nil {
-
-		return nil, err
-	}
-
-	claims, ok := token.Claims.(*SignedDetails)
-	if !ok {
-
-		return nil, err
-	}
-
-	if claims.ExpiresAt < time.Now().Local().Unix() {
-
-		return nil, err
-	}
-
-	return claims, nil
+	return nil
 }
 
 func GeneratePassword(raw string) (string, error) {

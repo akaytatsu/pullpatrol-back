@@ -31,22 +31,16 @@ func SetupRouters() *gin.Engine {
 
 	r.GET("/", handlers.HomeHandler)
 
-	r.GET("/xml", handlers.XmlHandler)
-	r.GET("/text", handlers.TextHandler)
-	r.GET("/yaml", handlers.YamlHandler)
-	r.GET("/protobuf", handlers.ProtobufHandler)
-	r.GET("/sse", handlers.ServerSideEventsHandler)
-
 	// Login do usuario
 	r.POST("/login", func(gin *gin.Context) {
 		handlers.LoginHandler(gin, usecaseUser)
 	})
 
-	authorized := r.Group("/api")
-
+	authorized := r.Group("/api/user")
 	authorized.Use(middleware.AuthenticatedMiddleware())
-
-	authorized.GET("/secret", handlers.SecretHandler)
+	authorized.GET("/me", func(gin *gin.Context) {
+		handlers.GetMeHandler(gin, usecaseUser)
+	})
 
 	return r
 }
