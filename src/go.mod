@@ -9,13 +9,17 @@ require (
 	github.com/go-playground/validator/v10 v10.14.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/mock v1.6.0
+	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
+	github.com/joho/godotenv v1.5.1
 	github.com/segmentio/kafka-go v0.4.42
+	github.com/shopspring/decimal v1.3.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/smartystreets/goconvey v1.8.1
-	github.com/stretchr/testify v1.8.3
+	github.com/steebchen/prisma-client-go v0.20.0
+	github.com/stretchr/testify v1.8.4
+	github.com/takuoki/gocase v1.0.0
 	golang.org/x/crypto v0.11.0
-	gorm.io/driver/postgres v1.5.2
-	gorm.io/gorm v1.25.2
+	golang.org/x/text v0.11.0
 )
 
 require (
@@ -29,11 +33,6 @@ require (
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
-	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgx/v5 v5.3.1 // indirect
-	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
@@ -54,7 +53,6 @@ require (
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/text v0.11.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

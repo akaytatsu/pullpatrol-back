@@ -6,9 +6,10 @@ import (
 	"app/api/handlers"
 	"app/api/middleware"
 	"app/config"
-	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
 	usecase_user "app/usecase/user"
+
+	"app/prisma/db"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -16,13 +17,11 @@ import (
 
 func SetupRouters() *gin.Engine {
 
-	db, err := postgres.Connect()
+	dbClient := db.NewClient()
+	dbClient.Connect()
+	defer dbClient.Disconnect()
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	repositoryUser := repository.NewUserPostgres(db)
+	repositoryUser := repository.NewRepositoryUser(dbClient)
 	usecaseUser := usecase_user.NewService(repositoryUser)
 
 	r := gin.New()

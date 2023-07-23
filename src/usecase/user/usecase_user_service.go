@@ -12,10 +12,9 @@ import (
 const SECRET_KEY = "9an0afx$thw)k9#y*_d9-ch^r&a6ndi#x#dwu^52zbqw=hso(9"
 
 type SignedDetails struct {
-	ID        int
-	FirstName string
-	LastName  string
-	Email     string
+	ID    int
+	Name  string
+	Email string
 	jwt.StandardClaims
 }
 
@@ -113,10 +112,9 @@ func (u *UseCaseUser) GetUserByToken(token string) (*entity.EntityUser, error) {
 func JWTTokenGenerator(u entity.EntityUser) (signedToken string, signedRefreshToken string, err error) {
 
 	claims := SignedDetails{
-		ID:        u.ID,
-		FirstName: u.FirstName,
-		LastName:  u.LastName,
-		Email:     u.Email,
+		ID:    u.ID,
+		Name:  u.Name,
+		Email: u.Email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 		},
@@ -173,10 +171,9 @@ func ValidateToken(signedToken string) (claims *SignedDetails, err error) {
 
 func (u *UseCaseUser) CreateAdminUser() error {
 	user, err := entity.NewUser(entity.EntityUser{
-		FirstName: "Admin",
-		LastName:  "Admin",
-		Email:     os.Getenv("DEFAULT_ADMIN_MAIL"),
-		Password:  os.Getenv("DEFAULT_ADMIN_PASSWORD"),
+		Name:     "Admin",
+		Email:    os.Getenv("DEFAULT_ADMIN_MAIL"),
+		Password: os.Getenv("DEFAULT_ADMIN_PASSWORD"),
 	})
 
 	if err != nil {
@@ -193,7 +190,7 @@ func (u *UseCaseUser) CreateAdminUser() error {
 	_, err = u.repo.GetByMail(user.Email)
 
 	if err == nil {
-		return nil
+		return err
 	}
 
 	return u.repo.CreateUser(user)

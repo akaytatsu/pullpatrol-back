@@ -1,7 +1,7 @@
 package entity
 
 type EntityRepository struct {
-	ID   string `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name" validate:"required,min=2,max=80"`
 	Url  string `json:"url" validate:"required,min=2,max=455"`
 }

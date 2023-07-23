@@ -1,24 +1,16 @@
 package kafka
 
 import (
-	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
 	kafka_hanlders "app/kafka/hanlders"
+	"app/prisma/db"
 	usecase_user "app/usecase/user"
-	"log"
 
 	"github.com/segmentio/kafka-go"
 )
 
 func StartKafka() {
-
-	db, err := postgres.Connect()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	repositoryUser := repository.NewUserPostgres(db)
+	repositoryUser := repository.NewRepositoryUser(db.NewClient())
 	usecaseUser := usecase_user.NewService(repositoryUser)
 
 	var topicParams []KafkaReadTopicsParams

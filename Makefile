@@ -91,3 +91,11 @@ coverage: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app go tool cover -html=coverage.out -o coverage.html
 	xdg-open http://localhost:9070/coverage.html
 	cd src && php -S 0:9070
+
+makemigrations: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go migrate dev --name migrate
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db
+
+migrate: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go migrate deploy
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db

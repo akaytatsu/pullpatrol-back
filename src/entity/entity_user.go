@@ -8,8 +8,7 @@ import (
 
 type EntityUser struct {
 	ID        int
-	FirstName string    `json:"first_name" validate:"required,min=2,max=50"`
-	LastName  string    `json:"last_name"  validate:"required,min=2,max=50"`
+	Name      string    `json:"name" validate:"required,min=2,max=50"`
 	Email     string    `json:"email"      validate:"required,email"`
 	Password  string    `json:"password"   validate:"required,min=8,max=120"`
 	CreatedAt time.Time `json:"created_at"`
@@ -27,8 +26,7 @@ func NewUser(userParam EntityUser) (*EntityUser, error) {
 	}
 
 	u := &EntityUser{
-		FirstName: userParam.FirstName,
-		LastName:  userParam.LastName,
+		Name:      userParam.Name,
 		Email:     userParam.Email,
 		Password:  password,
 		CreatedAt: now,

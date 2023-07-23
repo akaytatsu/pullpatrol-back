@@ -3,27 +3,25 @@ package main
 import (
 	"app/api"
 	"app/cron"
-	"app/entity"
-	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
+	"app/prisma/db"
 	usecase_user "app/usecase/user"
 )
 
 func main() {
 	cron.StartCronJobs()
 
-	db, err := postgres.Connect()
-
-	if err != nil {
+	dbClient := db.NewClient()
+	if err := dbClient.Connect(); err != nil {
 		panic(err)
 	}
 
-	db.AutoMigrate(&entity.EntityUser{})
-
 	// create default user
-	repo := repository.NewUserPostgres(db)
+	repo := repository.NewRepositoryUser(dbClient)
 	usecase := usecase_user.NewService(repo)
 	usecase.CreateAdminUser()
+
+	dbClient.Disconnect()
 
 	api.StartWebServer()
 }

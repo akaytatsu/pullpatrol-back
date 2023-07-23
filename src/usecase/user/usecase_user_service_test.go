@@ -51,8 +51,7 @@ func TestUsecaseUser_CreateUser(t *testing.T) {
 
 		err := usecase_user.NewService(mockUserRepo).Create(&entity.EntityUser{
 			Email:     "mailer@mailer.com",
-			LastName:  "Mailer",
-			FirstName: "Mailer",
+			Name:  "Mailer",
 			Password:  "password33",
 		})
 

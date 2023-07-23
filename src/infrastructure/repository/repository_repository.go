@@ -2,52 +2,114 @@ package repository
 
 import (
 	"app/entity"
-
-	"gorm.io/gorm"
+	"app/prisma/db"
+	"context"
 )
 
 type RepositoryRepository struct {
-	db *gorm.DB
+	db *db.PrismaClient
 }
 
-func NewRepositoryPostgres(db *gorm.DB) *RepositoryRepository {
+func NewRepositoryRepository(db *db.PrismaClient) *RepositoryRepository {
 	return &RepositoryRepository{db: db}
 }
 
-func (r *RepositoryRepository) GetByID(id string) (repository *entity.EntityRepository, err error) {
-	err = r.db.Where("id = ?", id).First(&repository).Error
+func (r *RepositoryRepository) GetByID(id int) (repository *entity.EntityRepository, err error) {
+
+	context := context.Background()
+
+	model, err := r.db.Repository.FindUnique(
+		db.Repository.ID.Equals(id),
+	).Exec(context)
+
+	if err != nil {
+		return nil, err
+	}
+
+	repository = &entity.EntityRepository{
+		ID:   model.ID,
+		Name: model.Name,
+		Url:  model.URL,
+	}
 
 	return repository, err
 }
 
 func (r *RepositoryRepository) GetByName(name string) (repository *entity.EntityRepository, err error) {
-	err = r.db.Where("name = ?", name).First(&repository).Error
+	context := context.Background()
+
+	model, err := r.db.Repository.FindFirst(
+		db.Repository.Name.Equals(name),
+	).Exec(context)
+
+	if err != nil {
+		return nil, err
+	}
+
+	repository = &entity.EntityRepository{
+		ID:   model.ID,
+		Name: model.Name,
+		Url:  model.URL,
+	}
 
 	return repository, err
 }
 
 func (r *RepositoryRepository) CreateRepository(repository *entity.EntityRepository) error {
-	return r.db.Create(&repository).Error
+	context := context.Background()
+
+	_, err := r.db.Repository.FindUnique(
+		db.Repository.ID.Equals(repository.ID),
+	).Exec(context)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Repository.CreateOne(
+		db.Repository.Name.Equals(repository.Name),
+		db.Repository.URL.Equals(repository.Url),
+	).Exec(context)
+
+	return err
 }
 
 func (r *RepositoryRepository) UpdateRepository(repository *entity.EntityRepository) error {
 
-	_, err := r.GetByName(repository.Name)
+	context := context.Background()
+
+	_, err := r.db.Repository.FindUnique(
+		db.Repository.ID.Equals(repository.ID),
+	).Exec(context)
 
 	if err != nil {
 		return err
 	}
 
-	return r.db.Save(&repository).Error
+	_, err = r.db.Repository.FindUnique(
+		db.Repository.ID.Equals(repository.ID),
+	).Update(
+		db.Repository.Name.Set(repository.Name),
+	).Exec(context)
+
+	return err
 }
 
 func (r *RepositoryRepository) DeleteRepository(repository *entity.EntityRepository) error {
 
-	_, err := r.GetByName(repository.Name)
+	context := context.Background()
+
+	_, err := r.db.Repository.FindUnique(
+		db.Repository.ID.Equals(repository.ID),
+	).Exec(context)
 
 	if err != nil {
 		return err
 	}
 
-	return r.db.Delete(&repository).Error
+	_, err = r.db.Repository.FindUnique(
+		db.Repository.ID.Equals(repository.ID),
+	).Delete().Exec(context)
+
+	return err
 }
