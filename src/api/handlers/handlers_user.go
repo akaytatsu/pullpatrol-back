@@ -33,7 +33,7 @@ func LoginHandler(c *gin.Context, usecaseUser usecase_user.IUsecaseUser) {
 	user, err := usecaseUser.LoginUser(loginData.Email, loginData.Password)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "user not found"})
 		return
 	}
 

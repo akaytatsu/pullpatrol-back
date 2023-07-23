@@ -10,6 +10,7 @@ import (
 	"app/infrastructure/repository"
 	usecase_user "app/usecase/user"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,13 +27,19 @@ func SetupRouters() *gin.Engine {
 
 	r := gin.New()
 
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowCredentials = true
+	config.AddAllowHeaders("authorization")
+
+	r.Use(cors.New(config))
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
 	r.GET("/", handlers.HomeHandler)
 
 	// Login do usuario
-	r.POST("/login", func(gin *gin.Context) {
+	r.POST("/api/login", func(gin *gin.Context) {
 		handlers.LoginHandler(gin, usecaseUser)
 	})
 

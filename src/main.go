@@ -5,6 +5,8 @@ import (
 	"app/cron"
 	"app/entity"
 	"app/infrastructure/postgres"
+	"app/infrastructure/repository"
+	usecase_user "app/usecase/user"
 )
 
 func main() {
@@ -17,6 +19,11 @@ func main() {
 	}
 
 	db.AutoMigrate(&entity.EntityUser{})
+
+	// create default user
+	repo := repository.NewUserPostgres(db)
+	usecase := usecase_user.NewService(repo)
+	usecase.CreateAdminUser()
 
 	api.StartWebServer()
 }

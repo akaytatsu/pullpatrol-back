@@ -3,6 +3,7 @@ package usecase_user
 import (
 	"app/entity"
 	"errors"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -27,6 +28,7 @@ func NewService(repository IRepositoryUser) *UseCaseUser {
 }
 
 func (u *UseCaseUser) LoginUser(email string, password string) (*entity.EntityUser, error) {
+
 	user, err := u.repo.GetByMail(email)
 
 	if err != nil {
@@ -167,4 +169,32 @@ func ValidateToken(signedToken string) (claims *SignedDetails, err error) {
 	}
 
 	return claims, nil
+}
+
+func (u *UseCaseUser) CreateAdminUser() error {
+	user, err := entity.NewUser(entity.EntityUser{
+		FirstName: "Admin",
+		LastName:  "Admin",
+		Email:     os.Getenv("DEFAULT_ADMIN_MAIL"),
+		Password:  os.Getenv("DEFAULT_ADMIN_PASSWORD"),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	err = user.GetValidated()
+
+	if err != nil {
+		return err
+	}
+
+	// check if user already exists
+	_, err = u.repo.GetByMail(user.Email)
+
+	if err == nil {
+		return nil
+	}
+
+	return u.repo.CreateUser(user)
 }

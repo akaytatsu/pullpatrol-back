@@ -58,12 +58,6 @@ func (u *EntityUser) GetValidated() error {
 		return err
 	}
 
-	pwd, err := GeneratePassword(u.Password)
-	if err != nil {
-		return err
-	}
-	u.Password = pwd
-
 	return nil
 }
 
