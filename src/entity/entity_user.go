@@ -11,6 +11,7 @@ type EntityUser struct {
 	Name      string    `json:"name" validate:"required,min=2,max=50"`
 	Email     string    `json:"email"      validate:"required,email"`
 	Password  string    `json:"password"   validate:"required,min=8,max=120"`
+	IsAdmin   bool      `json:"is_admin"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -29,6 +30,7 @@ func NewUser(userParam EntityUser) (*EntityUser, error) {
 		Name:      userParam.Name,
 		Email:     userParam.Email,
 		Password:  password,
+		IsAdmin:   userParam.IsAdmin,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}

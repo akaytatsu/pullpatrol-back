@@ -96,6 +96,15 @@ makemigrations: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go migrate dev --name migrate
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db
 
+generate: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go generate
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db
+
+dbsync: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go db push
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go generate
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db
+
 migrate: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go migrate deploy
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db

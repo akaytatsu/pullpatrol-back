@@ -4,7 +4,6 @@ import (
 	"app/entity"
 	"app/prisma/db"
 	"context"
-	"log"
 )
 
 type RepositoryUser struct {
@@ -73,15 +72,12 @@ func (u *RepositoryUser) CreateUser(user *entity.EntityUser) error {
 
 	context := context.Background()
 
-	log.Println("++++++++++++++++++++++++++++++")
 	_, err = u.db.User.CreateOne(
 		db.User.Email.Set(user.Email),
 		db.User.Name.Set(user.Name),
 		db.User.Password.Set(user.Password),
+		db.User.IsAdmin.Set(user.IsAdmin),
 	).Exec(context)
-
-	log.Println(err)
-	log.Println("########")
 
 	return err
 }

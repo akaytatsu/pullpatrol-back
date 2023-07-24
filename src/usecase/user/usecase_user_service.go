@@ -3,6 +3,7 @@ package usecase_user
 import (
 	"app/entity"
 	"errors"
+	"log"
 	"os"
 	"time"
 
@@ -174,6 +175,7 @@ func (u *UseCaseUser) CreateAdminUser() error {
 		Name:     "Admin",
 		Email:    os.Getenv("DEFAULT_ADMIN_MAIL"),
 		Password: os.Getenv("DEFAULT_ADMIN_PASSWORD"),
+		IsAdmin:  true,
 	})
 
 	if err != nil {
@@ -192,6 +194,10 @@ func (u *UseCaseUser) CreateAdminUser() error {
 	if err == nil {
 		return err
 	}
+
+	log.Println("5555555555555")
+	log.Println(user)
+	log.Println(user.IsAdmin)
 
 	return u.repo.CreateUser(user)
 }
