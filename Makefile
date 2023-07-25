@@ -93,18 +93,16 @@ coverage: show_env
 	cd src && php -S 0:9070
 
 makemigrations: show_env
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go migrate dev --name migrate
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db
-
-generate: show_env
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go generate
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db
-
-dbsync: show_env
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go db push
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go generate
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app migrate create -ext sql -dir /app/infrastructure/db/migrations -seq ${ARGS}
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app chown -R "${USER}:${USER}" ./
+	sudo chown -R "${USER}:${USER}" ./
 
 migrate: show_env
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app go run github.com/steebchen/prisma-client-go migrate deploy
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app go get app/prisma/db
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app migrate -source file:///app/infrastructure/db/migrations -database ${DATABASE_URL} -verbose up ${ARGS}
+
+migrate_clean: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app migrate -source file:///app/infrastructure/db/migrations -database ${DATABASE_URL} -verbose down --all
+
+make sqlc_generate: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app bash -c "cd /app/infrastructure/db && sqlc generate"
+	sudo chown -R "${USER}:${USER}" ./

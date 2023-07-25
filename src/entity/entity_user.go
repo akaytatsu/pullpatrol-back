@@ -26,14 +26,11 @@ func NewUser(userParam EntityUser) (*EntityUser, error) {
 		return nil, err
 	}
 
-	u := &EntityUser{
-		Name:      userParam.Name,
-		Email:     userParam.Email,
-		Password:  password,
-		IsAdmin:   userParam.IsAdmin,
-		CreatedAt: now,
-		UpdatedAt: now,
-	}
+	userParam.Password = password
+	userParam.CreatedAt = now
+	userParam.UpdatedAt = now
+
+	u := &userParam
 
 	return u, nil
 }

@@ -3,25 +3,21 @@ package main
 import (
 	"app/api"
 	"app/cron"
+	"app/infrastructure/db"
 	"app/infrastructure/repository"
-	"app/prisma/db"
 	usecase_user "app/usecase/user"
 )
 
 func main() {
 	cron.StartCronJobs()
 
-	dbClient := db.NewClient()
-	if err := dbClient.Connect(); err != nil {
-		panic(err)
-	}
+	conn := db.Connect()
+	defer conn.Close()
 
 	// create default user
-	repo := repository.NewRepositoryUser(dbClient)
+	repo := repository.NewRepositoryUser(conn)
 	usecase := usecase_user.NewService(repo)
 	usecase.CreateAdminUser()
-
-	defer dbClient.Disconnect()
 
 	api.StartWebServer()
 }

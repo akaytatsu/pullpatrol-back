@@ -1,30 +1,38 @@
 package api
 
 import (
+	"database/sql"
 	"log"
 
 	"app/api/handlers"
 	"app/api/middleware"
 	"app/config"
+	"app/infrastructure/db"
 	"app/infrastructure/repository"
 	usecase_repository "app/usecase/repository"
 	usecase_user "app/usecase/user"
-
-	"app/prisma/db"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-func setupDatabase() *db.PrismaClient {
-	dbClient := db.NewClient()
-	dbClient.Connect()
-	return dbClient
+func setupDatabase() *sql.DB {
+	conn := db.Connect()
+	return conn
 }
 
-func setupHandlers(dbClient *db.PrismaClient) (*handlers.UserHandlers, *handlers.RepositoryHandlers) {
-	userHandlers := handlers.NewUserHandler(usecase_user.NewService(repository.NewRepositoryUser(dbClient)))
-	repoHandlers := handlers.NewRepositoryHandler(usecase_repository.NewService(repository.NewRepositoryRepository(dbClient)))
+func setupHandlers(conn *sql.DB) (*handlers.UserHandlers, *handlers.RepositoryHandlers) {
+	userHandlers := handlers.NewUserHandler(
+		usecase_user.NewService(
+			repository.NewRepositoryUser(conn),
+		),
+	)
+
+	repoHandlers := handlers.NewRepositoryHandler(
+		usecase_repository.NewService(
+			repository.NewRepositoryRepository(conn),
+		),
+	)
 	return userHandlers, repoHandlers
 }
 
@@ -49,9 +57,11 @@ func setupRouter(userHandlers handlers.UserHandlers, repoHandlers handlers.Repos
 	userGroup.GET("/me", userHandlers.GetMeHandler)
 
 	repGroup := r.Group("/api/repository")
-	repGroup.GET("/list", repoHandlers.GetRepositoriesHandle)
-	repGroup.POST("/create", repoHandlers.CreateRepositoryHandle)
-	repGroup.DELETE("/delete/:id", repoHandlers.DeleteRepositoryHandle)
+	repGroup.GET("", repoHandlers.GetRepositoriesHandle)
+	repGroup.POST("", repoHandlers.CreateRepositoryHandle)
+	repGroup.DELETE("/:id", repoHandlers.DeleteRepositoryHandle)
+
+	r.POST("/git-webhook", repoHandlers.GitWebhookHandler)
 
 	return r
 }

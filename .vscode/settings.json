@@ -1,7 +1,12 @@
 {
-    "go.autocompleteUnimportedPackages": true,
+    "go.useLanguageServer": true,
     "editor.formatOnSave": true,
     "gopls": {
         "experimentalWorkspaceModule": true,
     },
+    "[sql]": {
+        "editor.formatOnSave": false,
+        "editor.formatOnPaste": false,
+        "editor.formatOnType": false
+    }
 }

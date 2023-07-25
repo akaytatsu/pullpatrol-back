@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"app/entity"
+	"app/infrastructure/git/github"
 	usecase_repository "app/usecase/repository"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -46,4 +48,18 @@ func (h RepositoryHandlers) DeleteRepositoryHandle(c *gin.Context) {
 		return
 	}
 	c.Data(http.StatusOK, gin.MIMEJSON, nil)
+}
+
+func (h RepositoryHandlers) GitWebhookHandler(c *gin.Context) {
+	var github github.Github
+
+	jsonData, _ := ioutil.ReadAll(c.Request.Body)
+
+	err := h.UsecaseRepository.ProccessPullRequest(github, jsonData)
+
+	if handleError(c, err) {
+		return
+	}
+
+	jsonResponse(c, http.StatusOK, gin.H{"message": "ok"})
 }

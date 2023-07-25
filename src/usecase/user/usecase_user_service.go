@@ -3,7 +3,6 @@ package usecase_user
 import (
 	"app/entity"
 	"errors"
-	"log"
 	"os"
 	"time"
 
@@ -194,10 +193,6 @@ func (u *UseCaseUser) CreateAdminUser() error {
 	if err == nil {
 		return err
 	}
-
-	log.Println("5555555555555")
-	log.Println(user)
-	log.Println(user.IsAdmin)
 
 	return u.repo.CreateUser(user)
 }

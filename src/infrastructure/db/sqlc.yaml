@@ -1,0 +1,24 @@
+version: "2"
+project:
+  id: "pullpatrol"
+cloud:
+  organization: ""
+  project: ""
+  hostname: ""
+sql:
+  - engine: "postgresql"
+    queries: "./raw"
+    schema: "./migrations"
+    gen:
+      go:
+        package: "queries"
+        # sql_package: "pgx/v5"
+        out: "queries"
+        emit_prepared_queries: true
+        emit_interface: true
+        emit_exact_table_names: false
+        emit_json_tags: true
+overrides:
+  go: null
+plugins: []
+rules: []
