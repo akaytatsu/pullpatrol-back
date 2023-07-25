@@ -9,47 +9,41 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetRepositoriesHandle(c *gin.Context, usecaseRepository usecase_repository.IUsecaseRepository) {
-	repositories, err := usecaseRepository.GetRepositories()
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, repositories)
+type RepositoryHandlers struct {
+	UsecaseRepository usecase_repository.IUsecaseRepository
 }
 
-func CreateRepositoryHandle(c *gin.Context, usecaseRepository usecase_repository.IUsecaseRepository) {
+func NewRepositoryHandler(usecaseRepo usecase_repository.IUsecaseRepository) *RepositoryHandlers {
+	return &RepositoryHandlers{UsecaseRepository: usecaseRepo}
+}
+
+func (h RepositoryHandlers) GetRepositoriesHandle(c *gin.Context) {
+	repositories, err := h.UsecaseRepository.GetRepositories()
+	if handleError(c, err) {
+		return
+	}
+	jsonResponse(c, http.StatusOK, repositories)
+}
+
+func (h RepositoryHandlers) CreateRepositoryHandle(c *gin.Context) {
 	var repository entity.EntityRepository
-
-	if err := c.ShouldBindJSON(&repository); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := c.ShouldBindJSON(&repository); handleError(c, err) {
 		return
 	}
-
-	if err := usecaseRepository.Create(&repository); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := h.UsecaseRepository.Create(&repository); handleError(c, err) {
 		return
 	}
-
-	c.JSON(http.StatusOK, repository)
+	jsonResponse(c, http.StatusOK, repository)
 }
 
-func DeleteRepositoryHandle(c *gin.Context, usecaseRepository usecase_repository.IUsecaseRepository) {
+func (h RepositoryHandlers) DeleteRepositoryHandle(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-
-	repo, err := usecaseRepository.Get(id)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	repo, err := h.UsecaseRepository.Get(id)
+	if handleError(c, err) {
 		return
 	}
-
-	if err := usecaseRepository.Delete(repo); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := h.UsecaseRepository.Delete(repo); handleError(c, err) {
 		return
 	}
-
 	c.Data(http.StatusOK, gin.MIMEJSON, nil)
 }

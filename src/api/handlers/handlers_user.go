@@ -21,119 +21,120 @@ type UpdateUserPasswordData struct {
 	ConfirmPassword string `json:"confirmPassword"`
 }
 
-func LoginHandler(c *gin.Context, usecaseUser usecase_user.IUsecaseUser) {
+type UserHandlers struct {
+	UsecaseUser usecase_user.IUsecaseUser
+}
+
+func NewUserHandler(usecaseUser usecase_user.IUsecaseUser) *UserHandlers {
+	return &UserHandlers{UsecaseUser: usecaseUser}
+}
+
+func (h UserHandlers) LoginHandler(c *gin.Context) {
 
 	var loginData LoginData
 
 	if err := c.ShouldBindJSON(&loginData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		handleError(c, err)
 		return
 	}
 
-	user, err := usecaseUser.LoginUser(loginData.Email, loginData.Password)
+	user, err := h.UsecaseUser.LoginUser(loginData.Email, loginData.Password)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "user not found"})
+	if exception := handleError(c, err); exception {
 		return
 	}
 
 	token, refreshToken, err := usecase_user.JWTTokenGenerator(*user)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	if exception := handleError(c, err); exception {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token, "refreshToken": refreshToken})
+	jsonResponse(c, http.StatusOK, gin.H{"token": token, "refreshToken": refreshToken})
 
 }
 
-func GetMeHandler(c *gin.Context, usecaseUser usecase_user.IUsecaseUser) {
-	user, err := usecaseUser.GetUserByToken(c.GetHeader("Authorization"))
+func (h UserHandlers) GetMeHandler(c *gin.Context) {
+	user, err := h.UsecaseUser.GetUserByToken(c.GetHeader("Authorization"))
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	if exception := handleError(c, err); exception {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	jsonResponse(c, http.StatusOK, user)
 }
 
-func CreateUserHandler(c *gin.Context, usecaseUser usecase_user.IUsecaseUser) {
+func (h UserHandlers) CreateUserHandler(c *gin.Context) {
 
 	var entityUser entity.EntityUser
 
 	if err := c.ShouldBindJSON(&entityUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		handleError(c, err)
 		return
 	}
 
-	err := usecaseUser.Create(&entityUser)
+	err := h.UsecaseUser.Create(&entityUser)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	if exception := handleError(c, err); exception {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
+	jsonResponse(c, http.StatusOK, gin.H{"message": "User created successfully"})
+
 }
 
-func UpdateUserHandler(c *gin.Context, usecaseUser usecase_user.IUsecaseUser) {
+func (h UserHandlers) UpdateUserHandler(c *gin.Context) {
 
 	var entityUser entity.EntityUser
 
 	if err := c.ShouldBindJSON(&entityUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		handleError(c, err)
 		return
 	}
 
-	err := usecaseUser.Update(&entityUser)
+	err := h.UsecaseUser.Update(&entityUser)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	if exception := handleError(c, err); exception {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+	jsonResponse(c, http.StatusOK, gin.H{"message": "User updated successfully"})
 }
 
-func DeleteUserHandler(c *gin.Context, usecaseUser usecase_user.IUsecaseUser) {
+func (h UserHandlers) DeleteUserHandler(c *gin.Context) {
 
 	var entityUser entity.EntityUser
 
 	if err := c.ShouldBindJSON(&entityUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		handleError(c, err)
 		return
 	}
 
-	err := usecaseUser.Delete(&entityUser)
+	err := h.UsecaseUser.Delete(&entityUser)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	if exception := handleError(c, err); exception {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+	jsonResponse(c, http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
 
-func UpdatePasswordHandler(c *gin.Context, usecaseUser usecase_user.IUsecaseUser) {
+func (h UserHandlers) UpdatePasswordHandler(c *gin.Context) {
 
 	var updatePasswordData UpdateUserPasswordData
 
 	if err := c.ShouldBindJSON(&updatePasswordData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		handleError(c, err)
 		return
 	}
 
-	// id to int
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	err := usecaseUser.UpdatePassword(id, updatePasswordData.OldPassword, updatePasswordData.NewPassword, updatePasswordData.ConfirmPassword)
+	err := h.UsecaseUser.UpdatePassword(id, updatePasswordData.OldPassword, updatePasswordData.NewPassword, updatePasswordData.ConfirmPassword)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	if exception := handleError(c, err); exception {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Password updated successfully"})
+	jsonResponse(c, http.StatusOK, gin.H{"message": "Password updated successfully"})
 }

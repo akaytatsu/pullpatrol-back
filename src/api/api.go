@@ -16,18 +16,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouters() *gin.Engine {
-
+func setupDatabase() *db.PrismaClient {
 	dbClient := db.NewClient()
 	dbClient.Connect()
-	// defer dbClient.Disconnect()
+	return dbClient
+}
 
-	repositoryUser := repository.NewRepositoryUser(dbClient)
-	usecaseUser := usecase_user.NewService(repositoryUser)
+func setupHandlers(dbClient *db.PrismaClient) (*handlers.UserHandlers, *handlers.RepositoryHandlers) {
+	userHandlers := handlers.NewUserHandler(usecase_user.NewService(repository.NewRepositoryUser(dbClient)))
+	repoHandlers := handlers.NewRepositoryHandler(usecase_repository.NewService(repository.NewRepositoryRepository(dbClient)))
+	return userHandlers, repoHandlers
+}
 
-	repositoryRepo := repository.NewRepositoryRepository(dbClient)
-	usecaseRepo := usecase_repository.NewService(repositoryRepo)
-
+func setupRouter(userHandlers handlers.UserHandlers, repoHandlers handlers.RepositoryHandlers) *gin.Engine {
 	r := gin.New()
 
 	config := cors.DefaultConfig()
@@ -39,59 +40,29 @@ func SetupRouters() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.GET("/routers", func(c *gin.Context) {
-		type Router struct {
-			Method string `json:"method"`
-			Path   string `json:"path"`
-		}
-
-		var routers []Router = make([]Router, 0)
-
-		for _, route := range r.Routes() {
-			routers = append(routers, Router{
-				Method: route.Method,
-				Path:   route.Path,
-			})
-		}
-
-		if gin.Mode() == gin.DebugMode {
-			c.JSON(200, routers)
-		}
-	})
-
+	r.GET("/routers", func(ctx *gin.Context) { handlers.RoutersHandler(ctx, r) })
 	r.GET("/", handlers.HomeHandler)
+	r.POST("/api/login", userHandlers.LoginHandler)
 
-	// Login do usuario
-	r.POST("/api/login", func(gin *gin.Context) {
-		handlers.LoginHandler(gin, usecaseUser)
-	})
+	userGroup := r.Group("/api/user")
+	userGroup.Use(middleware.AuthenticatedMiddleware())
+	userGroup.GET("/me", userHandlers.GetMeHandler)
 
-	authorized := r.Group("/api/user")
-	authorized.Use(middleware.AuthenticatedMiddleware())
-	authorized.GET("/me", func(gin *gin.Context) {
-		handlers.GetMeHandler(gin, usecaseUser)
-	})
-
-	authorized = r.Group("/api/repository")
-	// authorized.Use(middleware.AuthenticatedMiddleware())
-	authorized.GET("/list", func(gin *gin.Context) {
-		handlers.GetRepositoriesHandle(gin, usecaseRepo)
-	})
-	authorized.POST("/create", func(gin *gin.Context) {
-		handlers.CreateRepositoryHandle(gin, usecaseRepo)
-	})
-	authorized.DELETE("/delete/:id", func(gin *gin.Context) {
-		handlers.DeleteRepositoryHandle(gin, usecaseRepo)
-	})
+	repGroup := r.Group("/api/repository")
+	repGroup.GET("/list", repoHandlers.GetRepositoriesHandle)
+	repGroup.POST("/create", repoHandlers.CreateRepositoryHandle)
+	repGroup.DELETE("/delete/:id", repoHandlers.DeleteRepositoryHandle)
 
 	return r
 }
 
+func SetupRouters() *gin.Engine {
+	dbClient := setupDatabase()
+	userHandlers, repoHandlers := setupHandlers(dbClient)
+	return setupRouter(*userHandlers, *repoHandlers)
+}
+
 func StartWebServer() {
 	config.ReadEnvironmentVars()
-
-	r := SetupRouters()
-
-	// Bind to a port and pass our router in
-	log.Fatal(r.Run())
+	log.Fatal(SetupRouters().Run())
 }
