@@ -18,7 +18,7 @@ model User {
 }
 
 model Repository {
-    id   Int    @id @default(autoincrement())
-    name String
-    url  String
+    id         Int     @id @default(autoincrement())
+    repository String  @unique
+    active     Boolean @default(true)
 }

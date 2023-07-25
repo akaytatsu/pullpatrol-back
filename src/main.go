@@ -21,7 +21,7 @@ func main() {
 	usecase := usecase_user.NewService(repo)
 	usecase.CreateAdminUser()
 
-	dbClient.Disconnect()
+	defer dbClient.Disconnect()
 
 	api.StartWebServer()
 }

@@ -27,9 +27,9 @@ func (r *RepositoryRepository) GetByID(id int) (repository *entity.EntityReposit
 	}
 
 	repository = &entity.EntityRepository{
-		ID:   model.ID,
-		Name: model.Name,
-		Url:  model.URL,
+		ID:         model.ID,
+		Repository: model.Repository,
+		Active:     model.Active,
 	}
 
 	return repository, err
@@ -39,7 +39,7 @@ func (r *RepositoryRepository) GetByName(name string) (repository *entity.Entity
 	context := context.Background()
 
 	model, err := r.db.Repository.FindFirst(
-		db.Repository.Name.Equals(name),
+		db.Repository.Repository.Equals(name),
 	).Exec(context)
 
 	if err != nil {
@@ -47,9 +47,9 @@ func (r *RepositoryRepository) GetByName(name string) (repository *entity.Entity
 	}
 
 	repository = &entity.EntityRepository{
-		ID:   model.ID,
-		Name: model.Name,
-		Url:  model.URL,
+		ID:         model.ID,
+		Repository: model.Repository,
+		Active:     model.Active,
 	}
 
 	return repository, err
@@ -62,13 +62,13 @@ func (r *RepositoryRepository) CreateRepository(repository *entity.EntityReposit
 		db.Repository.ID.Equals(repository.ID),
 	).Exec(context)
 
-	if err != nil {
+	if err == nil {
 		return err
 	}
 
 	_, err = r.db.Repository.CreateOne(
-		db.Repository.Name.Equals(repository.Name),
-		db.Repository.URL.Equals(repository.Url),
+		db.Repository.Repository.Set(repository.Repository),
+		db.Repository.Active.Set(repository.Active),
 	).Exec(context)
 
 	return err
@@ -89,7 +89,7 @@ func (r *RepositoryRepository) UpdateRepository(repository *entity.EntityReposit
 	_, err = r.db.Repository.FindUnique(
 		db.Repository.ID.Equals(repository.ID),
 	).Update(
-		db.Repository.Name.Set(repository.Name),
+		db.Repository.Active.Set(repository.Active),
 	).Exec(context)
 
 	return err
@@ -112,4 +112,28 @@ func (r *RepositoryRepository) DeleteRepository(repository *entity.EntityReposit
 	).Delete().Exec(context)
 
 	return err
+}
+
+func (r *RepositoryRepository) GetRepositories() (repositories []entity.EntityRepository, err error) {
+
+	repositories = make([]entity.EntityRepository, 0)
+
+	context := context.Background()
+
+	models, err := r.db.Repository.FindMany().Exec(context)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, model := range models {
+		repository := entity.EntityRepository{
+			ID:         model.ID,
+			Repository: model.Repository,
+			Active:     model.Active,
+		}
+		repositories = append(repositories, repository)
+	}
+
+	return repositories, err
 }

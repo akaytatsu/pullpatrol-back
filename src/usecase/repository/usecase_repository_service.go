@@ -28,3 +28,11 @@ func (u *UsecaseRepository) Update(repository *entity.EntityRepository) error {
 func (u *UsecaseRepository) Delete(repository *entity.EntityRepository) error {
 	return u.repo.DeleteRepository(repository)
 }
+
+func (u *UsecaseRepository) GetRepositories() (repositories []entity.EntityRepository, err error) {
+	return u.repo.GetRepositories()
+}
+
+func (u *UsecaseRepository) Get(id int) (repository *entity.EntityRepository, err error) {
+	return u.repo.GetByID(id)
+}
