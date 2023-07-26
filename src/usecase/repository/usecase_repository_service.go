@@ -45,7 +45,7 @@ func (u *UsecaseRepository) Get(id int) (repository *entity.EntityRepository, er
 }
 
 func (u *UsecaseRepository) ProccessPullRequest(git git.GitInterface, payload []byte) (err error) {
-	var repo entity.EntityRepository
+	var repository *entity.EntityRepository
 	var entityPR entity.EntityPullRequest
 
 	data, err := git.ProccessWebhook(payload)
@@ -57,11 +57,7 @@ func (u *UsecaseRepository) ProccessPullRequest(git git.GitInterface, payload []
 	if git.Driver() == "github" {
 		structuredData := data.(github.GitHubWebhookPullRequest)
 
-		repo = entity.EntityRepository{
-			Repository: structuredData.Repository.CloneURL,
-		}
-
-		err := u.repo.CreateOrUpdateRepository(&repo)
+		repository, err = u.repo.GetByRepo(structuredData.Repository.CloneURL)
 
 		if err != nil {
 			return err
@@ -69,8 +65,8 @@ func (u *UsecaseRepository) ProccessPullRequest(git git.GitInterface, payload []
 
 		entityPR = entity.EntityPullRequest{
 			Number:        structuredData.PullRequest.Number,
-			Repository:    repo,
-			RepositoryID:  repo.ID,
+			Repository:    *repository,
+			RepositoryID:  repository.ID,
 			Title:         structuredData.PullRequest.Title,
 			Action:        structuredData.Action,
 			Status:        structuredData.PullRequest.State,

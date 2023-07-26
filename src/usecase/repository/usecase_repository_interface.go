@@ -8,6 +8,7 @@ import (
 //go:generate mockgen -destination=../../mocks/mock_usecase_repository_repository.go -package=mocks app/usecase/repository IRepositoryRepository
 type IRepositoryRepository interface {
 	GetByID(id int) (repository *entity.EntityRepository, err error)
+	GetByRepo(repo string) (repository *entity.EntityRepository, err error)
 	CreateOrUpdateRepository(repository *entity.EntityRepository) error
 	DeleteRepository(repository *entity.EntityRepository) error
 	GetRepositories() (repositories []entity.EntityRepository, err error)

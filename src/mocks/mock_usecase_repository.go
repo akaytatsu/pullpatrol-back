@@ -6,6 +6,7 @@ package mocks
 
 import (
 	entity "app/entity"
+	git "app/infrastructure/git"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -60,6 +61,50 @@ func (m *MockIUsecaseRepository) Delete(arg0 *entity.EntityRepository) error {
 func (mr *MockIUsecaseRepositoryMockRecorder) Delete(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockIUsecaseRepository)(nil).Delete), arg0)
+}
+
+// Get mocks base method.
+func (m *MockIUsecaseRepository) Get(arg0 int) (*entity.EntityRepository, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", arg0)
+	ret0, _ := ret[0].(*entity.EntityRepository)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockIUsecaseRepositoryMockRecorder) Get(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockIUsecaseRepository)(nil).Get), arg0)
+}
+
+// GetRepositories mocks base method.
+func (m *MockIUsecaseRepository) GetRepositories() ([]entity.EntityRepository, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRepositories")
+	ret0, _ := ret[0].([]entity.EntityRepository)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRepositories indicates an expected call of GetRepositories.
+func (mr *MockIUsecaseRepositoryMockRecorder) GetRepositories() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRepositories", reflect.TypeOf((*MockIUsecaseRepository)(nil).GetRepositories))
+}
+
+// ProccessPullRequest mocks base method.
+func (m *MockIUsecaseRepository) ProccessPullRequest(arg0 git.GitInterface, arg1 []byte) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProccessPullRequest", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ProccessPullRequest indicates an expected call of ProccessPullRequest.
+func (mr *MockIUsecaseRepositoryMockRecorder) ProccessPullRequest(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProccessPullRequest", reflect.TypeOf((*MockIUsecaseRepository)(nil).ProccessPullRequest), arg0, arg1)
 }
 
 // Update mocks base method.

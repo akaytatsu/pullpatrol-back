@@ -9,6 +9,22 @@ import (
 	"time"
 )
 
+type Group struct {
+	ID          int64        `json:"id"`
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
+}
+
+type GroupUser struct {
+	ID        int64        `json:"id"`
+	GroupID   int64        `json:"group_id"`
+	UserID    int64        `json:"user_id"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+}
+
 type Pullrequest struct {
 	ID           int64        `json:"id"`
 	Number       int64        `json:"number"`
@@ -24,6 +40,26 @@ type Pullrequest struct {
 	Commits      int32        `json:"commits"`
 	CreatedAt    sql.NullTime `json:"created_at"`
 	UpdatedAt    time.Time    `json:"updated_at"`
+}
+
+type PullrequestReview struct {
+	ID                int64        `json:"id"`
+	PullrequestID     int64        `json:"pullrequest_id"`
+	PullrequestRoleID int64        `json:"pullrequest_role_id"`
+	UserID            int64        `json:"user_id"`
+	Status            string       `json:"status"`
+	Comment           string       `json:"comment"`
+	CreatedAt         sql.NullTime `json:"created_at"`
+	UpdatedAt         time.Time    `json:"updated_at"`
+}
+
+type PullrequestRole struct {
+	ID            int64        `json:"id"`
+	PullrequestID int64        `json:"pullrequest_id"`
+	RoleType      string       `json:"role_type"`
+	Description   string       `json:"description"`
+	CreatedAt     sql.NullTime `json:"created_at"`
+	UpdatedAt     time.Time    `json:"updated_at"`
 }
 
 type Repository struct {

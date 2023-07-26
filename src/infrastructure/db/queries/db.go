@@ -36,6 +36,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.checkUserByIDStmt, err = db.PrepareContext(ctx, checkUserByID); err != nil {
 		return nil, fmt.Errorf("error preparing query CheckUserByID: %w", err)
 	}
+	if q.createGroupStmt, err = db.PrepareContext(ctx, createGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateGroup: %w", err)
+	}
 	if q.createPullRequestStmt, err = db.PrepareContext(ctx, createPullRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePullRequest: %w", err)
 	}
@@ -45,11 +48,20 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
+	if q.deleteGroupStmt, err = db.PrepareContext(ctx, deleteGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteGroup: %w", err)
+	}
 	if q.deleteRepositoryStmt, err = db.PrepareContext(ctx, deleteRepository); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteRepository: %w", err)
 	}
 	if q.deleteUserStmt, err = db.PrepareContext(ctx, deleteUser); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
+	}
+	if q.getGroupStmt, err = db.PrepareContext(ctx, getGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query GetGroup: %w", err)
+	}
+	if q.getGroupsStmt, err = db.PrepareContext(ctx, getGroups); err != nil {
+		return nil, fmt.Errorf("error preparing query GetGroups: %w", err)
 	}
 	if q.getPullRequestStmt, err = db.PrepareContext(ctx, getPullRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPullRequest: %w", err)
@@ -71,6 +83,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getUsersStmt, err = db.PrepareContext(ctx, getUsers); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUsers: %w", err)
+	}
+	if q.getUsersByGroupStmt, err = db.PrepareContext(ctx, getUsersByGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUsersByGroup: %w", err)
+	}
+	if q.updateGroupStmt, err = db.PrepareContext(ctx, updateGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateGroup: %w", err)
 	}
 	if q.updatePullRequestStmt, err = db.PrepareContext(ctx, updatePullRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePullRequest: %w", err)
@@ -106,6 +124,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing checkUserByIDStmt: %w", cerr)
 		}
 	}
+	if q.createGroupStmt != nil {
+		if cerr := q.createGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createGroupStmt: %w", cerr)
+		}
+	}
 	if q.createPullRequestStmt != nil {
 		if cerr := q.createPullRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPullRequestStmt: %w", cerr)
@@ -121,6 +144,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
 		}
 	}
+	if q.deleteGroupStmt != nil {
+		if cerr := q.deleteGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteGroupStmt: %w", cerr)
+		}
+	}
 	if q.deleteRepositoryStmt != nil {
 		if cerr := q.deleteRepositoryStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteRepositoryStmt: %w", cerr)
@@ -129,6 +157,16 @@ func (q *Queries) Close() error {
 	if q.deleteUserStmt != nil {
 		if cerr := q.deleteUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteUserStmt: %w", cerr)
+		}
+	}
+	if q.getGroupStmt != nil {
+		if cerr := q.getGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getGroupStmt: %w", cerr)
+		}
+	}
+	if q.getGroupsStmt != nil {
+		if cerr := q.getGroupsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getGroupsStmt: %w", cerr)
 		}
 	}
 	if q.getPullRequestStmt != nil {
@@ -164,6 +202,16 @@ func (q *Queries) Close() error {
 	if q.getUsersStmt != nil {
 		if cerr := q.getUsersStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUsersStmt: %w", cerr)
+		}
+	}
+	if q.getUsersByGroupStmt != nil {
+		if cerr := q.getUsersByGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUsersByGroupStmt: %w", cerr)
+		}
+	}
+	if q.updateGroupStmt != nil {
+		if cerr := q.updateGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateGroupStmt: %w", cerr)
 		}
 	}
 	if q.updatePullRequestStmt != nil {
@@ -224,11 +272,15 @@ type Queries struct {
 	checkRepositoryExistsStmt     *sql.Stmt
 	checkUserByEmailStmt          *sql.Stmt
 	checkUserByIDStmt             *sql.Stmt
+	createGroupStmt               *sql.Stmt
 	createPullRequestStmt         *sql.Stmt
 	createRepositoryStmt          *sql.Stmt
 	createUserStmt                *sql.Stmt
+	deleteGroupStmt               *sql.Stmt
 	deleteRepositoryStmt          *sql.Stmt
 	deleteUserStmt                *sql.Stmt
+	getGroupStmt                  *sql.Stmt
+	getGroupsStmt                 *sql.Stmt
 	getPullRequestStmt            *sql.Stmt
 	getRepositoriesStmt           *sql.Stmt
 	getRepositoryByIDStmt         *sql.Stmt
@@ -236,6 +288,8 @@ type Queries struct {
 	getUserStmt                   *sql.Stmt
 	getUserByEmailStmt            *sql.Stmt
 	getUsersStmt                  *sql.Stmt
+	getUsersByGroupStmt           *sql.Stmt
+	updateGroupStmt               *sql.Stmt
 	updatePullRequestStmt         *sql.Stmt
 	updateRepositoryStmt          *sql.Stmt
 	updateUserStmt                *sql.Stmt
@@ -249,11 +303,15 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		checkRepositoryExistsStmt:     q.checkRepositoryExistsStmt,
 		checkUserByEmailStmt:          q.checkUserByEmailStmt,
 		checkUserByIDStmt:             q.checkUserByIDStmt,
+		createGroupStmt:               q.createGroupStmt,
 		createPullRequestStmt:         q.createPullRequestStmt,
 		createRepositoryStmt:          q.createRepositoryStmt,
 		createUserStmt:                q.createUserStmt,
+		deleteGroupStmt:               q.deleteGroupStmt,
 		deleteRepositoryStmt:          q.deleteRepositoryStmt,
 		deleteUserStmt:                q.deleteUserStmt,
+		getGroupStmt:                  q.getGroupStmt,
+		getGroupsStmt:                 q.getGroupsStmt,
 		getPullRequestStmt:            q.getPullRequestStmt,
 		getRepositoriesStmt:           q.getRepositoriesStmt,
 		getRepositoryByIDStmt:         q.getRepositoryByIDStmt,
@@ -261,6 +319,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getUserStmt:                   q.getUserStmt,
 		getUserByEmailStmt:            q.getUserByEmailStmt,
 		getUsersStmt:                  q.getUsersStmt,
+		getUsersByGroupStmt:           q.getUsersByGroupStmt,
+		updateGroupStmt:               q.updateGroupStmt,
 		updatePullRequestStmt:         q.updatePullRequestStmt,
 		updateRepositoryStmt:          q.updateRepositoryStmt,
 		updateUserStmt:                q.updateUserStmt,

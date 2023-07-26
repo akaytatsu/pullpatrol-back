@@ -37,10 +37,29 @@ func (r *RepositoryRepository) GetByID(id int) (repository *entity.EntityReposit
 	return repository, err
 }
 
+func (r *RepositoryRepository) GetByRepo(repo string) (repository *entity.EntityRepository, err error) {
+
+	context := context.Background()
+
+	qRepo, err := r.queries.GetRepositoryByRepository(context, repo)
+
+	if err != nil {
+		return nil, err
+	}
+
+	repository = &entity.EntityRepository{
+		ID:         int(qRepo.ID),
+		Repository: qRepo.Repository,
+		Active:     qRepo.Active,
+	}
+
+	return repository, err
+}
+
 func (r *RepositoryRepository) CreateOrUpdateRepository(repository *entity.EntityRepository) error {
 	context := context.Background()
 
-	check := r.checkExistsRepo(repository.Repository)
+	check := r.CheckExistsRepo(repository.Repository)
 
 	var data queries.Repository
 	var err error
@@ -77,7 +96,7 @@ func (r *RepositoryRepository) DeleteRepository(repository *entity.EntityReposit
 
 	context := context.Background()
 
-	if check := r.checkExistsRepo(repository.Repository); !check {
+	if check := r.CheckExistsRepo(repository.Repository); !check {
 		return errors.New("repository not found")
 	}
 
@@ -152,7 +171,7 @@ func (r *RepositoryRepository) CreateOrUpdatePullRequest(pullRequest *entity.Ent
 	}
 }
 
-func (r *RepositoryRepository) checkExistsRepo(repo string) bool {
+func (r *RepositoryRepository) CheckExistsRepo(repo string) bool {
 	context := context.Background()
 
 	counter, _ := r.queries.CheckRepositoryExists(context, repo)

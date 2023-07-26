@@ -38,6 +38,32 @@ func (h RepositoryHandlers) CreateRepositoryHandle(c *gin.Context) {
 	jsonResponse(c, http.StatusOK, repository)
 }
 
+func (h RepositoryHandlers) GetRepositoryHandle(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	repository, err := h.UsecaseRepository.Get(id)
+
+	if handleError(c, err) {
+		return
+	}
+
+	jsonResponse(c, http.StatusOK, repository)
+}
+
+func (h RepositoryHandlers) UpdateRepositoryHandle(c *gin.Context) {
+	var repository entity.EntityRepository
+
+	if err := c.ShouldBindJSON(&repository); handleError(c, err) {
+		return
+	}
+
+	if err := h.UsecaseRepository.Update(&repository); handleError(c, err) {
+		return
+	}
+
+	jsonResponse(c, http.StatusOK, repository)
+}
+
 func (h RepositoryHandlers) DeleteRepositoryHandle(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	repo, err := h.UsecaseRepository.Get(id)

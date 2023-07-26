@@ -34,18 +34,32 @@ func (m *MockIRepositoryRepository) EXPECT() *MockIRepositoryRepositoryMockRecor
 	return m.recorder
 }
 
-// CreateRepository mocks base method.
-func (m *MockIRepositoryRepository) CreateRepository(arg0 *entity.EntityRepository) error {
+// CreateOrUpdatePullRequest mocks base method.
+func (m *MockIRepositoryRepository) CreateOrUpdatePullRequest(arg0 *entity.EntityPullRequest) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateRepository", arg0)
+	ret := m.ctrl.Call(m, "CreateOrUpdatePullRequest", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CreateRepository indicates an expected call of CreateRepository.
-func (mr *MockIRepositoryRepositoryMockRecorder) CreateRepository(arg0 interface{}) *gomock.Call {
+// CreateOrUpdatePullRequest indicates an expected call of CreateOrUpdatePullRequest.
+func (mr *MockIRepositoryRepositoryMockRecorder) CreateOrUpdatePullRequest(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRepository", reflect.TypeOf((*MockIRepositoryRepository)(nil).CreateRepository), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrUpdatePullRequest", reflect.TypeOf((*MockIRepositoryRepository)(nil).CreateOrUpdatePullRequest), arg0)
+}
+
+// CreateOrUpdateRepository mocks base method.
+func (m *MockIRepositoryRepository) CreateOrUpdateRepository(arg0 *entity.EntityRepository) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateOrUpdateRepository", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateOrUpdateRepository indicates an expected call of CreateOrUpdateRepository.
+func (mr *MockIRepositoryRepositoryMockRecorder) CreateOrUpdateRepository(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrUpdateRepository", reflect.TypeOf((*MockIRepositoryRepository)(nil).CreateOrUpdateRepository), arg0)
 }
 
 // DeleteRepository mocks base method.
@@ -63,7 +77,7 @@ func (mr *MockIRepositoryRepositoryMockRecorder) DeleteRepository(arg0 interface
 }
 
 // GetByID mocks base method.
-func (m *MockIRepositoryRepository) GetByID(arg0 string) (*entity.EntityRepository, error) {
+func (m *MockIRepositoryRepository) GetByID(arg0 int) (*entity.EntityRepository, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", arg0)
 	ret0, _ := ret[0].(*entity.EntityRepository)
@@ -77,31 +91,32 @@ func (mr *MockIRepositoryRepositoryMockRecorder) GetByID(arg0 interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetByID), arg0)
 }
 
-// GetByName mocks base method.
-func (m *MockIRepositoryRepository) GetByName(arg0 string) (*entity.EntityRepository, error) {
+// GetByRepo mocks base method.
+func (m *MockIRepositoryRepository) GetByRepo(arg0 string) (*entity.EntityRepository, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByName", arg0)
+	ret := m.ctrl.Call(m, "GetByRepo", arg0)
 	ret0, _ := ret[0].(*entity.EntityRepository)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetByName indicates an expected call of GetByName.
-func (mr *MockIRepositoryRepositoryMockRecorder) GetByName(arg0 interface{}) *gomock.Call {
+// GetByRepo indicates an expected call of GetByRepo.
+func (mr *MockIRepositoryRepositoryMockRecorder) GetByRepo(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByName", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetByName), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRepo", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetByRepo), arg0)
 }
 
-// UpdateRepository mocks base method.
-func (m *MockIRepositoryRepository) UpdateRepository(arg0 *entity.EntityRepository) error {
+// GetRepositories mocks base method.
+func (m *MockIRepositoryRepository) GetRepositories() ([]entity.EntityRepository, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateRepository", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "GetRepositories")
+	ret0, _ := ret[0].([]entity.EntityRepository)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// UpdateRepository indicates an expected call of UpdateRepository.
-func (mr *MockIRepositoryRepositoryMockRecorder) UpdateRepository(arg0 interface{}) *gomock.Call {
+// GetRepositories indicates an expected call of GetRepositories.
+func (mr *MockIRepositoryRepositoryMockRecorder) GetRepositories() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRepository", reflect.TypeOf((*MockIRepositoryRepository)(nil).UpdateRepository), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRepositories", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetRepositories))
 }

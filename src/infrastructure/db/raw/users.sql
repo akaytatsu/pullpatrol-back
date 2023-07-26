@@ -21,3 +21,21 @@ delete from users where id = $1;
 
 -- name: GetUsers :many
 select * from users order by id asc;
+
+-- name: GetUsersByGroup :many
+select u.* from users u inner join group_user gu on u.id = gu.user_id where gu.group_id = $1 order by u.id asc;
+
+-- name: GetGroups :many
+select * from groups order by id asc;
+
+-- name: GetGroup :one
+select * from groups where id = $1 LIMIT 1;
+
+-- name: CreateGroup :one
+insert into groups(name, description, updated_at) values ($1, $2, $3) RETURNING *;
+
+-- name: UpdateGroup :one
+update groups set name = $1, description = $2, updated_at = $3 where id = $4 RETURNING *;
+
+-- name: DeleteGroup :exec
+delete from groups where id = $1;

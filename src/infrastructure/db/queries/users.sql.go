@@ -33,6 +33,29 @@ func (q *Queries) CheckUserByID(ctx context.Context, id int64) (int64, error) {
 	return count, err
 }
 
+const createGroup = `-- name: CreateGroup :one
+insert into groups(name, description, updated_at) values ($1, $2, $3) RETURNING id, name, description, created_at, updated_at
+`
+
+type CreateGroupParams struct {
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group, error) {
+	row := q.queryRow(ctx, q.createGroupStmt, createGroup, arg.Name, arg.Description, arg.UpdatedAt)
+	var i Group
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 insert into users(name, email, password, is_admin, updated_at) values ($1, $2, $3, $4, $5) RETURNING id, name, email, password, is_admin, git_name, created_at, updated_at
 `
@@ -67,6 +90,15 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const deleteGroup = `-- name: DeleteGroup :exec
+delete from groups where id = $1
+`
+
+func (q *Queries) DeleteGroup(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.deleteGroupStmt, deleteGroup, id)
+	return err
+}
+
 const deleteUser = `-- name: DeleteUser :exec
 delete from users where id = $1
 `
@@ -74,6 +106,56 @@ delete from users where id = $1
 func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	_, err := q.exec(ctx, q.deleteUserStmt, deleteUser, id)
 	return err
+}
+
+const getGroup = `-- name: GetGroup :one
+select id, name, description, created_at, updated_at from groups where id = $1 LIMIT 1
+`
+
+func (q *Queries) GetGroup(ctx context.Context, id int64) (Group, error) {
+	row := q.queryRow(ctx, q.getGroupStmt, getGroup, id)
+	var i Group
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getGroups = `-- name: GetGroups :many
+select id, name, description, created_at, updated_at from groups order by id asc
+`
+
+func (q *Queries) GetGroups(ctx context.Context) ([]Group, error) {
+	rows, err := q.query(ctx, q.getGroupsStmt, getGroups)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Group
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUser = `-- name: GetUser :one
@@ -150,6 +232,71 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getUsersByGroup = `-- name: GetUsersByGroup :many
+select u.id, u.name, u.email, u.password, u.is_admin, u.git_name, u.created_at, u.updated_at from users u inner join group_user gu on u.id = gu.user_id where gu.group_id = $1 order by u.id asc
+`
+
+func (q *Queries) GetUsersByGroup(ctx context.Context, groupID int64) ([]User, error) {
+	rows, err := q.query(ctx, q.getUsersByGroupStmt, getUsersByGroup, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Email,
+			&i.Password,
+			&i.IsAdmin,
+			&i.GitName,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateGroup = `-- name: UpdateGroup :one
+update groups set name = $1, description = $2, updated_at = $3 where id = $4 RETURNING id, name, description, created_at, updated_at
+`
+
+type UpdateGroupParams struct {
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int64     `json:"id"`
+}
+
+func (q *Queries) UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Group, error) {
+	row := q.queryRow(ctx, q.updateGroupStmt, updateGroup,
+		arg.Name,
+		arg.Description,
+		arg.UpdatedAt,
+		arg.ID,
+	)
+	var i Group
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const updateUser = `-- name: UpdateUser :one

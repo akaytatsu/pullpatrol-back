@@ -13,11 +13,15 @@ type Querier interface {
 	CheckRepositoryExists(ctx context.Context, repository string) (int64, error)
 	CheckUserByEmail(ctx context.Context, email string) (int64, error)
 	CheckUserByID(ctx context.Context, id int64) (int64, error)
+	CreateGroup(ctx context.Context, arg CreateGroupParams) (Group, error)
 	CreatePullRequest(ctx context.Context, arg CreatePullRequestParams) error
 	CreateRepository(ctx context.Context, arg CreateRepositoryParams) (Repository, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeleteGroup(ctx context.Context, id int64) error
 	DeleteRepository(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
+	GetGroup(ctx context.Context, id int64) (Group, error)
+	GetGroups(ctx context.Context) ([]Group, error)
 	GetPullRequest(ctx context.Context, id int64) (Pullrequest, error)
 	GetRepositories(ctx context.Context) ([]Repository, error)
 	GetRepositoryByID(ctx context.Context, id int64) (Repository, error)
@@ -25,6 +29,8 @@ type Querier interface {
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUsers(ctx context.Context) ([]User, error)
+	GetUsersByGroup(ctx context.Context, groupID int64) ([]User, error)
+	UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Group, error)
 	UpdatePullRequest(ctx context.Context, arg UpdatePullRequestParams) error
 	UpdateRepository(ctx context.Context, arg UpdateRepositoryParams) (Repository, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)

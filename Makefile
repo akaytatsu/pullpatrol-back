@@ -98,7 +98,7 @@ makemigrations: show_env
 	sudo chown -R "${USER}:${USER}" ./
 
 migrate: show_env
-	docker-compose ${DOCKER_COMPOSE_FILE} exec app migrate -source file:///app/infrastructure/db/migrations -database ${DATABASE_URL} -verbose up ${ARGS}
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app migrate -source file:///app/infrastructure/db/migrations -database ${DATABASE_URL} -verbose up
 
 migrate_clean: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app migrate -source file:///app/infrastructure/db/migrations -database ${DATABASE_URL} -verbose down --all
@@ -106,3 +106,8 @@ migrate_clean: show_env
 make sqlc_generate: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app bash -c "cd /app/infrastructure/db && sqlc generate"
 	sudo chown -R "${USER}:${USER}" ./
+
+_clean_database: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec db bash -c "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c 'drop schema public cascade; create schema public;'"
+
+reset_migrations: show_env _clean_database migrate
