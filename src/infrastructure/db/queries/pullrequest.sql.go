@@ -39,7 +39,7 @@ type CreatePullRequestParams struct {
 	Status       string       `json:"status"`
 	Url          string       `json:"url"`
 	Title        string       `json:"title"`
-	CreatedAt    time.Time    `json:"created_at"`
+	CreatedAt    sql.NullTime `json:"created_at"`
 	UpdatedAt    time.Time    `json:"updated_at"`
 	ClosedAt     sql.NullTime `json:"closed_at"`
 	Additions    int32        `json:"additions"`
@@ -68,7 +68,7 @@ func (q *Queries) CreatePullRequest(ctx context.Context, arg CreatePullRequestPa
 }
 
 const getPullRequest = `-- name: GetPullRequest :one
-select id, number, action, repository_id, status, url, title, created_at, updated_at, closed_at, additions, deletions, changed_files, commits from pullrequest where id = $1
+select id, number, action, repository_id, status, url, title, closed_at, additions, deletions, changed_files, commits, created_at, updated_at from pullrequest where id = $1
 `
 
 func (q *Queries) GetPullRequest(ctx context.Context, id int64) (Pullrequest, error) {
@@ -82,13 +82,13 @@ func (q *Queries) GetPullRequest(ctx context.Context, id int64) (Pullrequest, er
 		&i.Status,
 		&i.Url,
 		&i.Title,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.ClosedAt,
 		&i.Additions,
 		&i.Deletions,
 		&i.ChangedFiles,
 		&i.Commits,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

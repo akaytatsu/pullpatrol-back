@@ -138,3 +138,27 @@ func (h UserHandlers) UpdatePasswordHandler(c *gin.Context) {
 
 	jsonResponse(c, http.StatusOK, gin.H{"message": "Password updated successfully"})
 }
+
+func (h UserHandlers) GetUsersHandler(c *gin.Context) {
+
+	users, err := h.UsecaseUser.GetUsers()
+
+	if exception := handleError(c, err); exception {
+		return
+	}
+
+	jsonResponse(c, http.StatusOK, users)
+}
+
+func (h UserHandlers) GetUserHandler(c *gin.Context) {
+
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	user, err := h.UsecaseUser.GetUser(id)
+
+	if exception := handleError(c, err); exception {
+		return
+	}
+
+	jsonResponse(c, http.StatusOK, user)
+}

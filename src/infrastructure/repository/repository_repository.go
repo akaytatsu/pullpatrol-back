@@ -37,44 +37,48 @@ func (r *RepositoryRepository) GetByID(id int) (repository *entity.EntityReposit
 	return repository, err
 }
 
-func (r *RepositoryRepository) CreateRepository(repository *entity.EntityRepository) error {
+func (r *RepositoryRepository) CreateOrUpdateRepository(repository *entity.EntityRepository) error {
 	context := context.Background()
 
-	if err := r.checkExistsRepo(repository.Repository); err != nil {
+	check := r.checkExistsRepo(repository.Repository)
+
+	var data queries.Repository
+	var err error
+
+	if check {
+		data, err = r.queries.UpdateRepository(context, queries.UpdateRepositoryParams{
+			Repository: repository.Repository,
+			Active:     true,
+			ID:         int64(repository.ID),
+			UpdatedAt:  time.Now(),
+		})
+
+		return err
+	} else {
+		data, err = r.queries.CreateRepository(context, queries.CreateRepositoryParams{
+			Repository: repository.Repository,
+			Active:     repository.Active,
+			UpdatedAt:  time.Now(),
+		})
+	}
+
+	if err != nil {
 		return err
 	}
 
-	err := r.queries.CreateRepository(context, queries.CreateRepositoryParams{
-		Repository: repository.Repository,
-		Active:     repository.Active,
-	})
+	repository.ID = int(data.ID)
+	repository.Repository = data.Repository
+	repository.Active = data.Active
 
-	return err
-}
-
-func (r *RepositoryRepository) UpdateRepository(repository *entity.EntityRepository) error {
-
-	context := context.Background()
-
-	if err := r.checkExistsRepo(repository.Repository); err != nil {
-		return err
-	}
-
-	err := r.queries.UpdateRepository(context, queries.UpdateRepositoryParams{
-		Repository: repository.Repository,
-		Active:     repository.Active,
-		ID:         int64(repository.ID),
-	})
-
-	return err
+	return nil
 }
 
 func (r *RepositoryRepository) DeleteRepository(repository *entity.EntityRepository) error {
 
 	context := context.Background()
 
-	if err := r.checkExistsRepo(repository.Repository); err != nil {
-		return err
+	if check := r.checkExistsRepo(repository.Repository); !check {
+		return errors.New("repository not found")
 	}
 
 	err := r.queries.DeleteRepository(context, int64(repository.ID))
@@ -103,7 +107,7 @@ func (r *RepositoryRepository) GetRepositories() (repositories []entity.EntityRe
 	return repositories, err
 }
 
-func (r *RepositoryRepository) CreatePullRequest(pullRequest *entity.EntityPullRequest) error {
+func (r *RepositoryRepository) CreateOrUpdatePullRequest(pullRequest *entity.EntityPullRequest) error {
 	context := context.Background()
 
 	counter, _ := r.queries.CheckPullRequestExists(context, queries.CheckPullRequestExistsParams{
@@ -136,7 +140,6 @@ func (r *RepositoryRepository) CreatePullRequest(pullRequest *entity.EntityPullR
 			RepositoryID: int64(pullRequest.RepositoryID),
 			Url:          pullRequest.URL,
 			Title:        pullRequest.Title,
-			CreatedAt:    time.Now(),
 			UpdatedAt:    time.Now(),
 			ClosedAt:     sql.NullTime{Time: pullRequest.ClosedAt},
 			Additions:    int32(pullRequest.Additions),
@@ -149,14 +152,10 @@ func (r *RepositoryRepository) CreatePullRequest(pullRequest *entity.EntityPullR
 	}
 }
 
-func (r *RepositoryRepository) checkExistsRepo(repo string) error {
+func (r *RepositoryRepository) checkExistsRepo(repo string) bool {
 	context := context.Background()
 
 	counter, _ := r.queries.CheckRepositoryExists(context, repo)
 
-	if counter == 0 {
-		return errors.New("Repository not found")
-	}
-
-	return nil
+	return counter != 0
 }

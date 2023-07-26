@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"app/api/handlers"
-	"app/api/middleware"
 	"app/config"
 	"app/infrastructure/db"
 	"app/infrastructure/repository"
@@ -53,8 +52,10 @@ func setupRouter(userHandlers handlers.UserHandlers, repoHandlers handlers.Repos
 	r.POST("/api/login", userHandlers.LoginHandler)
 
 	userGroup := r.Group("/api/user")
-	userGroup.Use(middleware.AuthenticatedMiddleware())
+	// userGroup.Use(middleware.AuthenticatedMiddleware())
 	userGroup.GET("/me", userHandlers.GetMeHandler)
+	userGroup.GET("/", userHandlers.GetUsersHandler)
+	userGroup.GET("/:id", userHandlers.GetUserHandler)
 
 	repGroup := r.Group("/api/repository")
 	repGroup.GET("", repoHandlers.GetRepositoriesHandle)

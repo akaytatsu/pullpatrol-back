@@ -7,11 +7,11 @@ select * from repositories where repository = $1;
 -- name: CheckRepositoryExists :one
 select count(*) from repositories where repository = $1;
 
--- name: CreateRepository :exec
-insert into repositories (repository, active) values ($1, $2);
+-- name: CreateRepository :one
+insert into repositories (repository, active, updated_at) values ($1, $2, $3) RETURNING *;
 
--- name: UpdateRepository :exec
-update repositories set repository = $1, active = $2 where id = $3;
+-- name: UpdateRepository :one
+update repositories set repository = $1, active = $2, updated_at = $3 where id = $4 RETURNING *;
 
 -- name: DeleteRepository :exec
 delete from repositories where id = $1;

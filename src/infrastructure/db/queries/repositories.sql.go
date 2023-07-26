@@ -7,6 +7,7 @@ package queries
 
 import (
 	"context"
+	"time"
 )
 
 const checkRepositoryExists = `-- name: CheckRepositoryExists :one
@@ -20,18 +21,27 @@ func (q *Queries) CheckRepositoryExists(ctx context.Context, repository string) 
 	return count, err
 }
 
-const createRepository = `-- name: CreateRepository :exec
-insert into repositories (repository, active) values ($1, $2)
+const createRepository = `-- name: CreateRepository :one
+insert into repositories (repository, active, updated_at) values ($1, $2, $3) RETURNING id, repository, active, created_at, updated_at
 `
 
 type CreateRepositoryParams struct {
-	Repository string `json:"repository"`
-	Active     bool   `json:"active"`
+	Repository string    `json:"repository"`
+	Active     bool      `json:"active"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
-func (q *Queries) CreateRepository(ctx context.Context, arg CreateRepositoryParams) error {
-	_, err := q.exec(ctx, q.createRepositoryStmt, createRepository, arg.Repository, arg.Active)
-	return err
+func (q *Queries) CreateRepository(ctx context.Context, arg CreateRepositoryParams) (Repository, error) {
+	row := q.queryRow(ctx, q.createRepositoryStmt, createRepository, arg.Repository, arg.Active, arg.UpdatedAt)
+	var i Repository
+	err := row.Scan(
+		&i.ID,
+		&i.Repository,
+		&i.Active,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const deleteRepository = `-- name: DeleteRepository :exec
@@ -110,17 +120,31 @@ func (q *Queries) GetRepositoryByRepository(ctx context.Context, repository stri
 	return i, err
 }
 
-const updateRepository = `-- name: UpdateRepository :exec
-update repositories set repository = $1, active = $2 where id = $3
+const updateRepository = `-- name: UpdateRepository :one
+update repositories set repository = $1, active = $2, updated_at = $3 where id = $4 RETURNING id, repository, active, created_at, updated_at
 `
 
 type UpdateRepositoryParams struct {
-	Repository string `json:"repository"`
-	Active     bool   `json:"active"`
-	ID         int64  `json:"id"`
+	Repository string    `json:"repository"`
+	Active     bool      `json:"active"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	ID         int64     `json:"id"`
 }
 
-func (q *Queries) UpdateRepository(ctx context.Context, arg UpdateRepositoryParams) error {
-	_, err := q.exec(ctx, q.updateRepositoryStmt, updateRepository, arg.Repository, arg.Active, arg.ID)
-	return err
+func (q *Queries) UpdateRepository(ctx context.Context, arg UpdateRepositoryParams) (Repository, error) {
+	row := q.queryRow(ctx, q.updateRepositoryStmt, updateRepository,
+		arg.Repository,
+		arg.Active,
+		arg.UpdatedAt,
+		arg.ID,
+	)
+	var i Repository
+	err := row.Scan(
+		&i.ID,
+		&i.Repository,
+		&i.Active,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

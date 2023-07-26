@@ -14,8 +14,8 @@ type Querier interface {
 	CheckUserByEmail(ctx context.Context, email string) (int64, error)
 	CheckUserByID(ctx context.Context, id int64) (int64, error)
 	CreatePullRequest(ctx context.Context, arg CreatePullRequestParams) error
-	CreateRepository(ctx context.Context, arg CreateRepositoryParams) error
-	CreateUser(ctx context.Context, arg CreateUserParams) error
+	CreateRepository(ctx context.Context, arg CreateRepositoryParams) (Repository, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteRepository(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	GetPullRequest(ctx context.Context, id int64) (Pullrequest, error)
@@ -24,9 +24,10 @@ type Querier interface {
 	GetRepositoryByRepository(ctx context.Context, repository string) (Repository, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUsers(ctx context.Context) ([]User, error)
 	UpdatePullRequest(ctx context.Context, arg UpdatePullRequestParams) error
-	UpdateRepository(ctx context.Context, arg UpdateRepositoryParams) error
-	UpdateUser(ctx context.Context, arg UpdateUserParams) error
+	UpdateRepository(ctx context.Context, arg UpdateRepositoryParams) (Repository, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

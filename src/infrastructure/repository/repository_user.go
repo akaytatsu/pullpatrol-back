@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 )
 
 type RepositoryUser struct {
@@ -32,8 +33,8 @@ func (u *RepositoryUser) GetByID(id int) (user *entity.EntityUser, err error) {
 		Name:      qUser.Name,
 		Email:     qUser.Email,
 		Password:  qUser.Password,
-		CreatedAt: qUser.CreatedAt,
-		UpdatedAt: qUser.CreatedAt,
+		CreatedAt: qUser.CreatedAt.Time,
+		UpdatedAt: qUser.UpdatedAt,
 	}
 
 	return user, err
@@ -50,7 +51,7 @@ func (u *RepositoryUser) GetByMail(email string) (user *entity.EntityUser, err e
 		Name:      qUser.Name,
 		Email:     qUser.Email,
 		Password:  qUser.Password,
-		CreatedAt: qUser.CreatedAt,
+		CreatedAt: qUser.CreatedAt.Time,
 		UpdatedAt: qUser.UpdatedAt,
 	}
 
@@ -59,20 +60,32 @@ func (u *RepositoryUser) GetByMail(email string) (user *entity.EntityUser, err e
 
 func (u *RepositoryUser) CreateUser(user *entity.EntityUser) error {
 
-	if err := u.checkExistsByMail(user.Email); err != nil {
+	if err := u.checkExistsByMail(user.Email); err == nil {
 		return err
 	}
 
 	context := context.Background()
 
-	err := u.queries.CreateUser(context, queries.CreateUserParams{
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
-		IsAdmin:  user.IsAdmin,
+	data, err := u.queries.CreateUser(context, queries.CreateUserParams{
+		Name:      user.Name,
+		Email:     user.Email,
+		Password:  user.Password,
+		IsAdmin:   user.IsAdmin,
+		UpdatedAt: time.Now(),
 	})
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	user.ID = int(data.ID)
+	user.IsAdmin = data.IsAdmin
+	user.CreatedAt = data.CreatedAt.Time
+	user.UpdatedAt = data.UpdatedAt
+	user.Email = data.Email
+	user.Name = data.Name
+
+	return nil
 }
 
 func (u *RepositoryUser) UpdateUser(user *entity.EntityUser) error {
@@ -82,7 +95,7 @@ func (u *RepositoryUser) UpdateUser(user *entity.EntityUser) error {
 		return err
 	}
 
-	err := u.queries.UpdateUser(context, queries.UpdateUserParams{
+	_, err := u.queries.UpdateUser(context, queries.UpdateUserParams{
 		Name:    user.Name,
 		Email:   user.Email,
 		IsAdmin: user.IsAdmin,
@@ -115,4 +128,48 @@ func (u *RepositoryUser) checkExistsByMail(email string) error {
 	}
 
 	return nil
+}
+
+func (u *RepositoryUser) GetUsers() (users []entity.EntityUser, err error) {
+
+	context := context.Background()
+
+	users = make([]entity.EntityUser, 0)
+
+	qUsers, err := u.queries.GetUsers(context)
+
+	for _, qUser := range qUsers {
+		user := entity.EntityUser{
+			ID:        int(qUser.ID),
+			Name:      qUser.Name,
+			Email:     qUser.Email,
+			IsAdmin:   qUser.IsAdmin,
+			CreatedAt: qUser.CreatedAt.Time,
+			UpdatedAt: qUser.UpdatedAt,
+		}
+
+		users = append(users, user)
+	}
+
+	return users, err
+}
+
+func (u *RepositoryUser) GetUser(id int) (user *entity.EntityUser, err error) {
+	context := context.Background()
+
+	qUser, err := u.queries.GetUser(context, int64(id))
+
+	if err != nil {
+		return nil, err
+	}
+
+	user = &entity.EntityUser{
+		ID:        int(qUser.ID),
+		Name:      qUser.Name,
+		Email:     qUser.Email,
+		CreatedAt: qUser.CreatedAt.Time,
+		UpdatedAt: qUser.UpdatedAt,
+	}
+
+	return user, err
 }

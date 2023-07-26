@@ -69,6 +69,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUserByEmailStmt, err = db.PrepareContext(ctx, getUserByEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByEmail: %w", err)
 	}
+	if q.getUsersStmt, err = db.PrepareContext(ctx, getUsers); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUsers: %w", err)
+	}
 	if q.updatePullRequestStmt, err = db.PrepareContext(ctx, updatePullRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePullRequest: %w", err)
 	}
@@ -158,6 +161,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUserByEmailStmt: %w", cerr)
 		}
 	}
+	if q.getUsersStmt != nil {
+		if cerr := q.getUsersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUsersStmt: %w", cerr)
+		}
+	}
 	if q.updatePullRequestStmt != nil {
 		if cerr := q.updatePullRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updatePullRequestStmt: %w", cerr)
@@ -227,6 +235,7 @@ type Queries struct {
 	getRepositoryByRepositoryStmt *sql.Stmt
 	getUserStmt                   *sql.Stmt
 	getUserByEmailStmt            *sql.Stmt
+	getUsersStmt                  *sql.Stmt
 	updatePullRequestStmt         *sql.Stmt
 	updateRepositoryStmt          *sql.Stmt
 	updateUserStmt                *sql.Stmt
@@ -251,6 +260,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getRepositoryByRepositoryStmt: q.getRepositoryByRepositoryStmt,
 		getUserStmt:                   q.getUserStmt,
 		getUserByEmailStmt:            q.getUserByEmailStmt,
+		getUsersStmt:                  q.getUsersStmt,
 		updatePullRequestStmt:         q.updatePullRequestStmt,
 		updateRepositoryStmt:          q.updateRepositoryStmt,
 		updateUserStmt:                q.updateUserStmt,

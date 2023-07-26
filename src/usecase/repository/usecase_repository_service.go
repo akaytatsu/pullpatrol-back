@@ -25,11 +25,11 @@ func (u *UsecaseRepository) Create(repository *entity.EntityRepository) error {
 
 	repository.Active = true
 
-	return u.repo.CreateRepository(repository)
+	return u.repo.CreateOrUpdateRepository(repository)
 }
 
 func (u *UsecaseRepository) Update(repository *entity.EntityRepository) error {
-	return u.repo.UpdateRepository(repository)
+	return u.repo.CreateOrUpdateRepository(repository)
 }
 
 func (u *UsecaseRepository) Delete(repository *entity.EntityRepository) error {
@@ -45,6 +45,7 @@ func (u *UsecaseRepository) Get(id int) (repository *entity.EntityRepository, er
 }
 
 func (u *UsecaseRepository) ProccessPullRequest(git git.GitInterface, payload []byte) (err error) {
+	var repo entity.EntityRepository
 	var entityPR entity.EntityPullRequest
 
 	data, err := git.ProccessWebhook(payload)
@@ -56,8 +57,20 @@ func (u *UsecaseRepository) ProccessPullRequest(git git.GitInterface, payload []
 	if git.Driver() == "github" {
 		structuredData := data.(github.GitHubWebhookPullRequest)
 
+		repo = entity.EntityRepository{
+			Repository: structuredData.Repository.CloneURL,
+		}
+
+		err := u.repo.CreateOrUpdateRepository(&repo)
+
+		if err != nil {
+			return err
+		}
+
 		entityPR = entity.EntityPullRequest{
 			Number:        structuredData.PullRequest.Number,
+			Repository:    repo,
+			RepositoryID:  repo.ID,
 			Title:         structuredData.PullRequest.Title,
 			Action:        structuredData.Action,
 			Status:        structuredData.PullRequest.State,
@@ -71,14 +84,14 @@ func (u *UsecaseRepository) ProccessPullRequest(git git.GitInterface, payload []
 			Commits:       structuredData.PullRequest.Commits,
 		}
 
-		err := u.repo.CreatePullRequest(&entityPR)
+		err = u.repo.CreateOrUpdatePullRequest(&entityPR)
 
 		if err != nil {
 			return err
 		}
 
 	} else {
-		return errors.New("Driver not found")
+		return errors.New("driver not found")
 	}
 
 	return nil

@@ -5,7 +5,7 @@ CREATE TABLE if not exists users (
     password VARCHAR(255) NOT NULL,
     is_admin boolean DEFAULT false NOT NULL,
     git_name VARCHAR(70) DEFAULT '',
-    created_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL
 );
 
@@ -13,7 +13,7 @@ create table if not exists repositories (
     id BIGSERIAL PRIMARY KEY,
     repository VARCHAR(220) NOT NULL,
     active boolean DEFAULT true NOT NULL,
-    created_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL
 );
 
@@ -25,11 +25,11 @@ create table if not exists pullrequest (
     status VARCHAR(40) NOT NULL,
     url VARCHAR(220) NOT NULL,
     title VARCHAR(220) NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
     closed_at TIMESTAMP,
     additions int NOT NULL,
     deletions int NOT NULL,
     changed_files int NOT NULL,
-    commits int NOT NULL
+    commits int NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL
 );

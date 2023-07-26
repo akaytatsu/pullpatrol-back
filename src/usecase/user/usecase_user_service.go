@@ -196,3 +196,11 @@ func (u *UseCaseUser) CreateAdminUser() error {
 
 	return u.repo.CreateUser(user)
 }
+
+func (u *UseCaseUser) GetUsers() (users []entity.EntityUser, err error) {
+	return u.repo.GetUsers()
+}
+
+func (u *UseCaseUser) GetUser(id int) (user *entity.EntityUser, err error) {
+	return u.repo.GetUser(id)
+}

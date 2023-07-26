@@ -9,6 +9,8 @@ type IRepositoryUser interface {
 	CreateUser(user *entity.EntityUser) error
 	UpdateUser(user *entity.EntityUser) error
 	DeleteUser(user *entity.EntityUser) error
+	GetUsers() (users []entity.EntityUser, err error)
+	GetUser(id int) (user *entity.EntityUser, err error)
 }
 
 //go:generate mockgen -destination=../../mocks/mock_usecase_user.go -package=mocks app/usecase/user IUsecaseUser
@@ -19,4 +21,6 @@ type IUsecaseUser interface {
 	Update(user *entity.EntityUser) error
 	Delete(user *entity.EntityUser) error
 	UpdatePassword(id int, oldPassword, newPassword, confirmPassword string) error
+	GetUsers() (users []entity.EntityUser, err error)
+	GetUser(id int) (user *entity.EntityUser, err error)
 }

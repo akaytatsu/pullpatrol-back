@@ -8,6 +8,7 @@ package queries
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const checkUserByEmail = `-- name: CheckUserByEmail :one
@@ -32,25 +33,38 @@ func (q *Queries) CheckUserByID(ctx context.Context, id int64) (int64, error) {
 	return count, err
 }
 
-const createUser = `-- name: CreateUser :exec
-insert into users(name, email, password, is_admin) values ($1, $2, $3, $4)
+const createUser = `-- name: CreateUser :one
+insert into users(name, email, password, is_admin, updated_at) values ($1, $2, $3, $4, $5) RETURNING id, name, email, password, is_admin, git_name, created_at, updated_at
 `
 
 type CreateUserParams struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	IsAdmin  bool   `json:"is_admin"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	IsAdmin   bool      `json:"is_admin"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
-	_, err := q.exec(ctx, q.createUserStmt, createUser,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.queryRow(ctx, q.createUserStmt, createUser,
 		arg.Name,
 		arg.Email,
 		arg.Password,
 		arg.IsAdmin,
+		arg.UpdatedAt,
 	)
-	return err
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.IsAdmin,
+		&i.GitName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -102,25 +116,74 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
-const updateUser = `-- name: UpdateUser :exec
-update users set name = $1, email = $2, is_admin = $3, git_name = $4 where id = $5
+const getUsers = `-- name: GetUsers :many
+select id, name, email, password, is_admin, git_name, created_at, updated_at from users order by id asc
+`
+
+func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
+	rows, err := q.query(ctx, q.getUsersStmt, getUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Email,
+			&i.Password,
+			&i.IsAdmin,
+			&i.GitName,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateUser = `-- name: UpdateUser :one
+update users set name = $1, email = $2, is_admin = $3, git_name = $4, updated_at = $5 where id = $6 RETURNING id, name, email, password, is_admin, git_name, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	Name    string         `json:"name"`
-	Email   string         `json:"email"`
-	IsAdmin bool           `json:"is_admin"`
-	GitName sql.NullString `json:"git_name"`
-	ID      int64          `json:"id"`
+	Name      string         `json:"name"`
+	Email     string         `json:"email"`
+	IsAdmin   bool           `json:"is_admin"`
+	GitName   sql.NullString `json:"git_name"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	ID        int64          `json:"id"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.exec(ctx, q.updateUserStmt, updateUser,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.queryRow(ctx, q.updateUserStmt, updateUser,
 		arg.Name,
 		arg.Email,
 		arg.IsAdmin,
 		arg.GitName,
+		arg.UpdatedAt,
 		arg.ID,
 	)
-	return err
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.IsAdmin,
+		&i.GitName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

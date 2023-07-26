@@ -17,21 +17,21 @@ type Pullrequest struct {
 	Status       string       `json:"status"`
 	Url          string       `json:"url"`
 	Title        string       `json:"title"`
-	CreatedAt    time.Time    `json:"created_at"`
-	UpdatedAt    time.Time    `json:"updated_at"`
 	ClosedAt     sql.NullTime `json:"closed_at"`
 	Additions    int32        `json:"additions"`
 	Deletions    int32        `json:"deletions"`
 	ChangedFiles int32        `json:"changed_files"`
 	Commits      int32        `json:"commits"`
+	CreatedAt    sql.NullTime `json:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at"`
 }
 
 type Repository struct {
-	ID         int64     `json:"id"`
-	Repository string    `json:"repository"`
-	Active     bool      `json:"active"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID         int64        `json:"id"`
+	Repository string       `json:"repository"`
+	Active     bool         `json:"active"`
+	CreatedAt  sql.NullTime `json:"created_at"`
+	UpdatedAt  time.Time    `json:"updated_at"`
 }
 
 type User struct {
@@ -41,6 +41,6 @@ type User struct {
 	Password  string         `json:"password"`
 	IsAdmin   bool           `json:"is_admin"`
 	GitName   sql.NullString `json:"git_name"`
-	CreatedAt time.Time      `json:"created_at"`
+	CreatedAt sql.NullTime   `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 }
