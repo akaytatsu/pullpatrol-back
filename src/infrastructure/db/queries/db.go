@@ -24,6 +24,12 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.addUserToGroupStmt, err = db.PrepareContext(ctx, addUserToGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query AddUserToGroup: %w", err)
+	}
+	if q.checkGroupExistsStmt, err = db.PrepareContext(ctx, checkGroupExists); err != nil {
+		return nil, fmt.Errorf("error preparing query CheckGroupExists: %w", err)
+	}
 	if q.checkPullRequestExistsStmt, err = db.PrepareContext(ctx, checkPullRequestExists); err != nil {
 		return nil, fmt.Errorf("error preparing query CheckPullRequestExists: %w", err)
 	}
@@ -87,6 +93,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUsersByGroupStmt, err = db.PrepareContext(ctx, getUsersByGroup); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUsersByGroup: %w", err)
 	}
+	if q.removeUserFromGroupStmt, err = db.PrepareContext(ctx, removeUserFromGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query RemoveUserFromGroup: %w", err)
+	}
 	if q.updateGroupStmt, err = db.PrepareContext(ctx, updateGroup); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateGroup: %w", err)
 	}
@@ -104,6 +113,16 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.addUserToGroupStmt != nil {
+		if cerr := q.addUserToGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing addUserToGroupStmt: %w", cerr)
+		}
+	}
+	if q.checkGroupExistsStmt != nil {
+		if cerr := q.checkGroupExistsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing checkGroupExistsStmt: %w", cerr)
+		}
+	}
 	if q.checkPullRequestExistsStmt != nil {
 		if cerr := q.checkPullRequestExistsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing checkPullRequestExistsStmt: %w", cerr)
@@ -209,6 +228,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUsersByGroupStmt: %w", cerr)
 		}
 	}
+	if q.removeUserFromGroupStmt != nil {
+		if cerr := q.removeUserFromGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing removeUserFromGroupStmt: %w", cerr)
+		}
+	}
 	if q.updateGroupStmt != nil {
 		if cerr := q.updateGroupStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateGroupStmt: %w", cerr)
@@ -268,6 +292,8 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                            DBTX
 	tx                            *sql.Tx
+	addUserToGroupStmt            *sql.Stmt
+	checkGroupExistsStmt          *sql.Stmt
 	checkPullRequestExistsStmt    *sql.Stmt
 	checkRepositoryExistsStmt     *sql.Stmt
 	checkUserByEmailStmt          *sql.Stmt
@@ -289,6 +315,7 @@ type Queries struct {
 	getUserByEmailStmt            *sql.Stmt
 	getUsersStmt                  *sql.Stmt
 	getUsersByGroupStmt           *sql.Stmt
+	removeUserFromGroupStmt       *sql.Stmt
 	updateGroupStmt               *sql.Stmt
 	updatePullRequestStmt         *sql.Stmt
 	updateRepositoryStmt          *sql.Stmt
@@ -299,6 +326,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:                            tx,
 		tx:                            tx,
+		addUserToGroupStmt:            q.addUserToGroupStmt,
+		checkGroupExistsStmt:          q.checkGroupExistsStmt,
 		checkPullRequestExistsStmt:    q.checkPullRequestExistsStmt,
 		checkRepositoryExistsStmt:     q.checkRepositoryExistsStmt,
 		checkUserByEmailStmt:          q.checkUserByEmailStmt,
@@ -320,6 +349,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getUserByEmailStmt:            q.getUserByEmailStmt,
 		getUsersStmt:                  q.getUsersStmt,
 		getUsersByGroupStmt:           q.getUsersByGroupStmt,
+		removeUserFromGroupStmt:       q.removeUserFromGroupStmt,
 		updateGroupStmt:               q.updateGroupStmt,
 		updatePullRequestStmt:         q.updatePullRequestStmt,
 		updateRepositoryStmt:          q.updateRepositoryStmt,

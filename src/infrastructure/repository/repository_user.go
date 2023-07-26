@@ -173,3 +173,132 @@ func (u *RepositoryUser) GetUser(id int) (user *entity.EntityUser, err error) {
 
 	return user, err
 }
+
+func (u *RepositoryUser) GetGroups() (groups []entity.EntityGroup, err error) {
+
+	context := context.Background()
+
+	groups = make([]entity.EntityGroup, 0)
+
+	qGroups, err := u.queries.GetGroups(context)
+
+	for _, qGroup := range qGroups {
+		group := entity.EntityGroup{
+			ID:        int(qGroup.ID),
+			Name:      qGroup.Name,
+			CreatedAt: qGroup.CreatedAt.Time,
+			UpdatedAt: qGroup.UpdatedAt,
+		}
+
+		groups = append(groups, group)
+	}
+
+	return groups, err
+}
+
+func (u *RepositoryUser) GetUsersByGroup(groupID int) (users []entity.EntityUser, err error) {
+
+	context := context.Background()
+
+	users = make([]entity.EntityUser, 0)
+
+	qUsers, err := u.queries.GetUsersByGroup(context, int64(groupID))
+
+	for _, qUser := range qUsers {
+		user := entity.EntityUser{
+			ID:        int(qUser.ID),
+			Name:      qUser.Name,
+			Email:     qUser.Email,
+			IsAdmin:   qUser.IsAdmin,
+			CreatedAt: qUser.CreatedAt.Time,
+			UpdatedAt: qUser.UpdatedAt,
+		}
+
+		users = append(users, user)
+	}
+
+	return users, err
+}
+
+func (u *RepositoryUser) GetGroup(groupID int) (group *entity.EntityGroup, err error) {
+	context := context.Background()
+
+	qGroup, err := u.queries.GetGroup(context, int64(groupID))
+
+	if err != nil {
+		return nil, err
+	}
+
+	group = &entity.EntityGroup{
+		ID:        int(qGroup.ID),
+		Name:      qGroup.Name,
+		CreatedAt: qGroup.CreatedAt.Time,
+		UpdatedAt: qGroup.UpdatedAt,
+	}
+
+	return group, err
+}
+
+func (u *RepositoryUser) CreateGroup(group *entity.EntityGroup) error {
+
+	context := context.Background()
+
+	data, err := u.queries.CreateGroup(context, queries.CreateGroupParams{
+		Name:      group.Name,
+		UpdatedAt: time.Now(),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	group.ID = int(data.ID)
+	group.CreatedAt = data.CreatedAt.Time
+	group.UpdatedAt = data.UpdatedAt
+
+	return nil
+}
+
+func (u *RepositoryUser) UpdateGroup(group *entity.EntityGroup) error {
+	context := context.Background()
+
+	_, err := u.queries.UpdateGroup(context, queries.UpdateGroupParams{
+		Name:      group.Name,
+		UpdatedAt: time.Now(),
+		ID:        int64(group.ID),
+	})
+
+	return err
+}
+
+func (u *RepositoryUser) DeleteGroup(group *entity.EntityGroup) error {
+
+	context := context.Background()
+
+	err := u.queries.DeleteGroup(context, int64(group.ID))
+
+	return err
+}
+
+func (u *RepositoryUser) AddUserToGroup(userID, groupID int) error {
+	context := context.Background()
+
+	_, err := u.queries.AddUserToGroup(context, queries.AddUserToGroupParams{
+		UserID:  int64(userID),
+		GroupID: int64(groupID),
+	})
+
+	return err
+}
+
+func (u *RepositoryUser) RemoveUserFromGroup(userID, groupID int) error {
+
+	context := context.Background()
+
+	err := u.queries.RemoveUserFromGroup(context, queries.RemoveUserFromGroupParams{
+		UserID:  int64(userID),
+		GroupID: int64(groupID),
+	})
+
+	return err
+}

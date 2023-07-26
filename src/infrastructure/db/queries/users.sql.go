@@ -11,6 +11,40 @@ import (
 	"time"
 )
 
+const addUserToGroup = `-- name: AddUserToGroup :one
+insert into group_user(group_id, user_id, updated_at) values ($1, $2, $3) RETURNING id, group_id, user_id, created_at, updated_at
+`
+
+type AddUserToGroupParams struct {
+	GroupID   int64     `json:"group_id"`
+	UserID    int64     `json:"user_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) AddUserToGroup(ctx context.Context, arg AddUserToGroupParams) (GroupUser, error) {
+	row := q.queryRow(ctx, q.addUserToGroupStmt, addUserToGroup, arg.GroupID, arg.UserID, arg.UpdatedAt)
+	var i GroupUser
+	err := row.Scan(
+		&i.ID,
+		&i.GroupID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const checkGroupExists = `-- name: CheckGroupExists :one
+select count(*) from groups where id = $1
+`
+
+func (q *Queries) CheckGroupExists(ctx context.Context, id int64) (int64, error) {
+	row := q.queryRow(ctx, q.checkGroupExistsStmt, checkGroupExists, id)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const checkUserByEmail = `-- name: CheckUserByEmail :one
 select count(*) from users where email = $1
 `
@@ -268,6 +302,20 @@ func (q *Queries) GetUsersByGroup(ctx context.Context, groupID int64) ([]User, e
 		return nil, err
 	}
 	return items, nil
+}
+
+const removeUserFromGroup = `-- name: RemoveUserFromGroup :exec
+delete from group_user where group_id = $1 and user_id = $2
+`
+
+type RemoveUserFromGroupParams struct {
+	GroupID int64 `json:"group_id"`
+	UserID  int64 `json:"user_id"`
+}
+
+func (q *Queries) RemoveUserFromGroup(ctx context.Context, arg RemoveUserFromGroupParams) error {
+	_, err := q.exec(ctx, q.removeUserFromGroupStmt, removeUserFromGroup, arg.GroupID, arg.UserID)
+	return err
 }
 
 const updateGroup = `-- name: UpdateGroup :one

@@ -3,8 +3,10 @@ package handlers
 import (
 	"app/entity"
 	"app/infrastructure/git/github"
+	"app/infrastructure/repository"
 	usecase_repository "app/usecase/repository"
-	"io/ioutil"
+	"database/sql"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -79,7 +81,7 @@ func (h RepositoryHandlers) DeleteRepositoryHandle(c *gin.Context) {
 func (h RepositoryHandlers) GitWebhookHandler(c *gin.Context) {
 	var github github.Github
 
-	jsonData, _ := ioutil.ReadAll(c.Request.Body)
+	jsonData, _ := io.ReadAll(c.Request.Body)
 
 	err := h.UsecaseRepository.ProccessPullRequest(github, jsonData)
 
@@ -88,4 +90,21 @@ func (h RepositoryHandlers) GitWebhookHandler(c *gin.Context) {
 	}
 
 	jsonResponse(c, http.StatusOK, gin.H{"message": "ok"})
+}
+
+func MountRepositoryHandlers(r *gin.Engine, conn *sql.DB) {
+
+	repoHandlers := NewRepositoryHandler(
+		usecase_repository.NewService(
+			repository.NewRepositoryRepository(conn),
+		),
+	)
+
+	repoGroup := r.Group("/api/repository")
+	repoGroup.GET("", repoHandlers.GetRepositoriesHandle)
+	repoGroup.POST("", repoHandlers.CreateRepositoryHandle)
+	repoGroup.GET("/:id", repoHandlers.GetRepositoryHandle)
+	repoGroup.PUT("/:id", repoHandlers.UpdateRepositoryHandle)
+	repoGroup.DELETE("/:id", repoHandlers.DeleteRepositoryHandle)
+	r.POST("/git-webhook", repoHandlers.GitWebhookHandler)
 }

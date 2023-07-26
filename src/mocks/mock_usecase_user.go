@@ -34,6 +34,20 @@ func (m *MockIUsecaseUser) EXPECT() *MockIUsecaseUserMockRecorder {
 	return m.recorder
 }
 
+// AddUserToGroup mocks base method.
+func (m *MockIUsecaseUser) AddUserToGroup(arg0, arg1 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddUserToGroup", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddUserToGroup indicates an expected call of AddUserToGroup.
+func (mr *MockIUsecaseUserMockRecorder) AddUserToGroup(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUserToGroup", reflect.TypeOf((*MockIUsecaseUser)(nil).AddUserToGroup), arg0, arg1)
+}
+
 // Create mocks base method.
 func (m *MockIUsecaseUser) Create(arg0 *entity.EntityUser) error {
 	m.ctrl.T.Helper()
@@ -48,6 +62,20 @@ func (mr *MockIUsecaseUserMockRecorder) Create(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIUsecaseUser)(nil).Create), arg0)
 }
 
+// CreateGroup mocks base method.
+func (m *MockIUsecaseUser) CreateGroup(arg0 *entity.EntityGroup) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateGroup", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateGroup indicates an expected call of CreateGroup.
+func (mr *MockIUsecaseUserMockRecorder) CreateGroup(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateGroup", reflect.TypeOf((*MockIUsecaseUser)(nil).CreateGroup), arg0)
+}
+
 // Delete mocks base method.
 func (m *MockIUsecaseUser) Delete(arg0 *entity.EntityUser) error {
 	m.ctrl.T.Helper()
@@ -60,6 +88,50 @@ func (m *MockIUsecaseUser) Delete(arg0 *entity.EntityUser) error {
 func (mr *MockIUsecaseUserMockRecorder) Delete(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockIUsecaseUser)(nil).Delete), arg0)
+}
+
+// DeleteGroup mocks base method.
+func (m *MockIUsecaseUser) DeleteGroup(arg0 *entity.EntityGroup) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteGroup", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteGroup indicates an expected call of DeleteGroup.
+func (mr *MockIUsecaseUserMockRecorder) DeleteGroup(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteGroup", reflect.TypeOf((*MockIUsecaseUser)(nil).DeleteGroup), arg0)
+}
+
+// GetGroup mocks base method.
+func (m *MockIUsecaseUser) GetGroup(arg0 int) (*entity.EntityGroup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGroup", arg0)
+	ret0, _ := ret[0].(*entity.EntityGroup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGroup indicates an expected call of GetGroup.
+func (mr *MockIUsecaseUserMockRecorder) GetGroup(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroup", reflect.TypeOf((*MockIUsecaseUser)(nil).GetGroup), arg0)
+}
+
+// GetGroups mocks base method.
+func (m *MockIUsecaseUser) GetGroups() ([]entity.EntityGroup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGroups")
+	ret0, _ := ret[0].([]entity.EntityGroup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGroups indicates an expected call of GetGroups.
+func (mr *MockIUsecaseUserMockRecorder) GetGroups() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroups", reflect.TypeOf((*MockIUsecaseUser)(nil).GetGroups))
 }
 
 // GetUser mocks base method.
@@ -107,6 +179,21 @@ func (mr *MockIUsecaseUserMockRecorder) GetUsers() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsers", reflect.TypeOf((*MockIUsecaseUser)(nil).GetUsers))
 }
 
+// GetUsersByGroup mocks base method.
+func (m *MockIUsecaseUser) GetUsersByGroup(arg0 int) ([]entity.EntityUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsersByGroup", arg0)
+	ret0, _ := ret[0].([]entity.EntityUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsersByGroup indicates an expected call of GetUsersByGroup.
+func (mr *MockIUsecaseUserMockRecorder) GetUsersByGroup(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersByGroup", reflect.TypeOf((*MockIUsecaseUser)(nil).GetUsersByGroup), arg0)
+}
+
 // LoginUser mocks base method.
 func (m *MockIUsecaseUser) LoginUser(arg0, arg1 string) (*entity.EntityUser, error) {
 	m.ctrl.T.Helper()
@@ -122,6 +209,20 @@ func (mr *MockIUsecaseUserMockRecorder) LoginUser(arg0, arg1 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoginUser", reflect.TypeOf((*MockIUsecaseUser)(nil).LoginUser), arg0, arg1)
 }
 
+// RemoveUserFromGroup mocks base method.
+func (m *MockIUsecaseUser) RemoveUserFromGroup(arg0, arg1 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveUserFromGroup", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveUserFromGroup indicates an expected call of RemoveUserFromGroup.
+func (mr *MockIUsecaseUserMockRecorder) RemoveUserFromGroup(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveUserFromGroup", reflect.TypeOf((*MockIUsecaseUser)(nil).RemoveUserFromGroup), arg0, arg1)
+}
+
 // Update mocks base method.
 func (m *MockIUsecaseUser) Update(arg0 *entity.EntityUser) error {
 	m.ctrl.T.Helper()
@@ -134,6 +235,20 @@ func (m *MockIUsecaseUser) Update(arg0 *entity.EntityUser) error {
 func (mr *MockIUsecaseUserMockRecorder) Update(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIUsecaseUser)(nil).Update), arg0)
+}
+
+// UpdateGroup mocks base method.
+func (m *MockIUsecaseUser) UpdateGroup(arg0 *entity.EntityGroup) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateGroup", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateGroup indicates an expected call of UpdateGroup.
+func (mr *MockIUsecaseUserMockRecorder) UpdateGroup(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateGroup", reflect.TypeOf((*MockIUsecaseUser)(nil).UpdateGroup), arg0)
 }
 
 // UpdatePassword mocks base method.

@@ -42,12 +42,13 @@ create table if not exists groups (
     updated_at TIMESTAMP NOT NULL
 );
 
-create table if not exists group_user (
+CREATE TABLE IF NOT EXISTS group_user (
     id BIGSERIAL PRIMARY KEY,
     group_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL
+    updated_at TIMESTAMP NOT NULL,
+    UNIQUE (group_id, user_id)
 );
 
 create table if not exists pullrequest_role (

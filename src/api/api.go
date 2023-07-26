@@ -7,9 +7,6 @@ import (
 	"app/api/handlers"
 	"app/config"
 	"app/infrastructure/db"
-	"app/infrastructure/repository"
-	usecase_repository "app/usecase/repository"
-	usecase_user "app/usecase/user"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -20,22 +17,7 @@ func setupDatabase() *sql.DB {
 	return conn
 }
 
-func setupHandlers(conn *sql.DB) (*handlers.UserHandlers, *handlers.RepositoryHandlers) {
-	userHandlers := handlers.NewUserHandler(
-		usecase_user.NewService(
-			repository.NewRepositoryUser(conn),
-		),
-	)
-
-	repoHandlers := handlers.NewRepositoryHandler(
-		usecase_repository.NewService(
-			repository.NewRepositoryRepository(conn),
-		),
-	)
-	return userHandlers, repoHandlers
-}
-
-func setupRouter(userHandlers handlers.UserHandlers, repoHandlers handlers.RepositoryHandlers) *gin.Engine {
+func setupRouter(conn *sql.DB) *gin.Engine {
 	r := gin.New()
 
 	config := cors.DefaultConfig()
@@ -47,30 +29,15 @@ func setupRouter(userHandlers handlers.UserHandlers, repoHandlers handlers.Repos
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.GET("/routers", func(ctx *gin.Context) { handlers.RoutersHandler(ctx, r) })
-	r.GET("/", handlers.HomeHandler)
-	r.POST("/api/login", userHandlers.LoginHandler)
-
-	userGroup := r.Group("/api/user")
-	// userGroup.Use(middleware.AuthenticatedMiddleware())
-	userGroup.GET("/me", userHandlers.GetMeHandler)
-	userGroup.GET("/", userHandlers.GetUsersHandler)
-	userGroup.GET("/:id", userHandlers.GetUserHandler)
-
-	repGroup := r.Group("/api/repository")
-	repGroup.GET("", repoHandlers.GetRepositoriesHandle)
-	repGroup.POST("", repoHandlers.CreateRepositoryHandle)
-	repGroup.DELETE("/:id", repoHandlers.DeleteRepositoryHandle)
-
-	r.POST("/git-webhook", repoHandlers.GitWebhookHandler)
+	handlers.MountUsersHandlers(r, conn)
+	handlers.MountRepositoryHandlers(r, conn)
 
 	return r
 }
 
 func SetupRouters() *gin.Engine {
-	dbClient := setupDatabase()
-	userHandlers, repoHandlers := setupHandlers(dbClient)
-	return setupRouter(*userHandlers, *repoHandlers)
+	conn := setupDatabase()
+	return setupRouter(conn)
 }
 
 func StartWebServer() {

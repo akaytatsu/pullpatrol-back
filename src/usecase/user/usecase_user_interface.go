@@ -11,6 +11,14 @@ type IRepositoryUser interface {
 	DeleteUser(user *entity.EntityUser) error
 	GetUsers() (users []entity.EntityUser, err error)
 	GetUser(id int) (user *entity.EntityUser, err error)
+	GetGroups() (groups []entity.EntityGroup, err error)
+	GetUsersByGroup(groupID int) (users []entity.EntityUser, err error)
+	GetGroup(groupID int) (group *entity.EntityGroup, err error)
+	CreateGroup(group *entity.EntityGroup) error
+	UpdateGroup(group *entity.EntityGroup) error
+	DeleteGroup(group *entity.EntityGroup) error
+	AddUserToGroup(userID, groupID int) error
+	RemoveUserFromGroup(userID, groupID int) error
 }
 
 //go:generate mockgen -destination=../../mocks/mock_usecase_user.go -package=mocks app/usecase/user IUsecaseUser
@@ -23,4 +31,12 @@ type IUsecaseUser interface {
 	UpdatePassword(id int, oldPassword, newPassword, confirmPassword string) error
 	GetUsers() (users []entity.EntityUser, err error)
 	GetUser(id int) (user *entity.EntityUser, err error)
+	GetGroups() (groups []entity.EntityGroup, err error)
+	GetUsersByGroup(groupID int) (users []entity.EntityUser, err error)
+	GetGroup(groupID int) (group *entity.EntityGroup, err error)
+	CreateGroup(group *entity.EntityGroup) error
+	UpdateGroup(group *entity.EntityGroup) error
+	DeleteGroup(group *entity.EntityGroup) error
+	AddUserToGroup(userID, groupID int) error
+	RemoveUserFromGroup(userID, groupID int) error
 }

@@ -204,3 +204,35 @@ func (u *UseCaseUser) GetUsers() (users []entity.EntityUser, err error) {
 func (u *UseCaseUser) GetUser(id int) (user *entity.EntityUser, err error) {
 	return u.repo.GetUser(id)
 }
+
+func (u *UseCaseUser) GetGroups() (groups []entity.EntityGroup, err error) {
+	return u.repo.GetGroups()
+}
+
+func (u *UseCaseUser) GetUsersByGroup(groupID int) (users []entity.EntityUser, err error) {
+	return u.repo.GetUsersByGroup(groupID)
+}
+
+func (u *UseCaseUser) GetGroup(groupID int) (group *entity.EntityGroup, err error) {
+	return u.repo.GetGroup(groupID)
+}
+
+func (u *UseCaseUser) CreateGroup(group *entity.EntityGroup) error {
+	return u.repo.CreateGroup(group)
+}
+
+func (u *UseCaseUser) UpdateGroup(group *entity.EntityGroup) error {
+	return u.repo.UpdateGroup(group)
+}
+
+func (u *UseCaseUser) DeleteGroup(group *entity.EntityGroup) error {
+	return u.repo.DeleteGroup(group)
+}
+
+func (u *UseCaseUser) AddUserToGroup(userID, groupID int) error {
+	return u.repo.AddUserToGroup(userID, groupID)
+}
+
+func (u *UseCaseUser) RemoveUserFromGroup(userID, groupID int) error {
+	return u.repo.RemoveUserFromGroup(userID, groupID)
+}

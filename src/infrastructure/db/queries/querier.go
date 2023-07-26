@@ -9,6 +9,8 @@ import (
 )
 
 type Querier interface {
+	AddUserToGroup(ctx context.Context, arg AddUserToGroupParams) (GroupUser, error)
+	CheckGroupExists(ctx context.Context, id int64) (int64, error)
 	CheckPullRequestExists(ctx context.Context, arg CheckPullRequestExistsParams) (int64, error)
 	CheckRepositoryExists(ctx context.Context, repository string) (int64, error)
 	CheckUserByEmail(ctx context.Context, email string) (int64, error)
@@ -30,6 +32,7 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUsers(ctx context.Context) ([]User, error)
 	GetUsersByGroup(ctx context.Context, groupID int64) ([]User, error)
+	RemoveUserFromGroup(ctx context.Context, arg RemoveUserFromGroupParams) error
 	UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Group, error)
 	UpdatePullRequest(ctx context.Context, arg UpdatePullRequestParams) error
 	UpdateRepository(ctx context.Context, arg UpdateRepositoryParams) (Repository, error)

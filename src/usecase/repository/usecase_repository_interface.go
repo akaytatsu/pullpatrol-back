@@ -13,6 +13,7 @@ type IRepositoryRepository interface {
 	DeleteRepository(repository *entity.EntityRepository) error
 	GetRepositories() (repositories []entity.EntityRepository, err error)
 	CreateOrUpdatePullRequest(pullRequest *entity.EntityPullRequest) error
+
 }
 
 //go:generate mockgen -destination=../../mocks/mock_usecase_repository.go -package=mocks app/usecase/repository IUsecaseRepository

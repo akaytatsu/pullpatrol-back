@@ -39,3 +39,12 @@ update groups set name = $1, description = $2, updated_at = $3 where id = $4 RET
 
 -- name: DeleteGroup :exec
 delete from groups where id = $1;
+
+-- name: CheckGroupExists :one
+select count(*) from groups where id = $1;
+
+-- name: AddUserToGroup :one
+insert into group_user(group_id, user_id, updated_at) values ($1, $2, $3) RETURNING *;
+
+-- name: RemoveUserFromGroup :exec
+delete from group_user where group_id = $1 and user_id = $2;
