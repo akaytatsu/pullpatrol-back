@@ -91,3 +91,23 @@ coverage: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app go tool cover -html=coverage.out -o coverage.html
 	xdg-open http://localhost:9070/coverage.html
 	cd src && php -S 0:9070
+
+makemigrations: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app migrate create -ext sql -dir /app/infrastructure/db/migrations -seq ${ARGS}
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app chown -R "${USER}:${USER}" ./
+	sudo chown -R "${USER}:${USER}" ./
+
+migrate: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app migrate -source file:///app/infrastructure/db/migrations -database ${DATABASE_URL} -verbose up
+
+migrate_clean: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app migrate -source file:///app/infrastructure/db/migrations -database ${DATABASE_URL} -verbose down --all
+
+make sqlc_generate: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec app bash -c "cd /app/infrastructure/db && sqlc generate"
+	sudo chown -R "${USER}:${USER}" ./
+
+_clean_database: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec db bash -c "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c 'drop schema public cascade; create schema public;'"
+
+reset_migrations: show_env _clean_database migrate

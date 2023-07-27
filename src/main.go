@@ -3,20 +3,21 @@ package main
 import (
 	"app/api"
 	"app/cron"
-	"app/entity"
-	"app/infrastructure/postgres"
+	"app/infrastructure/db"
+	"app/infrastructure/repository"
+	usecase_user "app/usecase/user"
 )
 
 func main() {
 	cron.StartCronJobs()
 
-	db, err := postgres.Connect()
+	conn := db.Connect()
+	defer conn.Close()
 
-	if err != nil {
-		panic(err)
-	}
-
-	db.AutoMigrate(&entity.EntityUser{})
+	// create default user
+	repo := repository.NewRepositoryUser(conn)
+	usecase := usecase_user.NewService(repo)
+	usecase.CreateAdminUser()
 
 	api.StartWebServer()
 }
