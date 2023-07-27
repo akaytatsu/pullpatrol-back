@@ -178,3 +178,74 @@ func (r *RepositoryRepository) CheckExistsRepo(repo string) bool {
 
 	return counter != 0
 }
+
+func (r *RepositoryRepository) GetPullRequestRoles(repositoryID int) (pullRequestRoles []entity.EntityPullRequestRole, err error) {
+	context := context.Background()
+
+	results, err := r.queries.GetPullRequestRoles(context, int64(repositoryID))
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range results {
+		pullRequestRoles = append(pullRequestRoles, entity.EntityPullRequestRole{
+			ID: int(result.ID),
+		})
+	}
+
+	return pullRequestRoles, err
+}
+
+func (r *RepositoryRepository) GetPullRequestRole(pullRequestRoleID int) (pullRequestRole *entity.EntityPullRequestRole, err error) {
+	context := context.Background()
+
+	result, err := r.queries.GetPullRequestRole(context, int64(pullRequestRoleID))
+
+	if err != nil {
+		return nil, err
+	}
+
+	pullRequestRole = &entity.EntityPullRequestRole{
+		ID: int(result.ID),
+	}
+
+	return pullRequestRole, err
+}
+
+func (r *RepositoryRepository) CreatePullRequestRole(repositoryID int, pullRequestRole *entity.EntityPullRequestRole) error {
+	context := context.Background()
+
+	model, err := r.queries.CreatePullRequestRole(context, queries.CreatePullRequestRoleParams{
+		RepositoryID: int64(repositoryID),
+		RoleType:     pullRequestRole.RoleType,
+		Description:  pullRequestRole.Description,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	})
+
+	pullRequestRole.ID = int(model.ID)
+
+	return err
+}
+
+func (r *RepositoryRepository) UpdatePullRequestRole(pullRequestRoleID int, pullRequestRole *entity.EntityPullRequestRole) error {
+	context := context.Background()
+
+	err := r.queries.UpdatePullRequestRole(context, queries.UpdatePullRequestRoleParams{
+		ID:          int64(pullRequestRoleID),
+		RoleType:    pullRequestRole.RoleType,
+		Description: pullRequestRole.Description,
+		UpdatedAt:   time.Now(),
+	})
+
+	return err
+}
+
+func (r *RepositoryRepository) DeletePullRequestRole(pullRequestRoleID int) error {
+	context := context.Background()
+
+	err := r.queries.DeletePullRequestRole(context, int64(pullRequestRoleID))
+
+	return err
+}

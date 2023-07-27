@@ -106,5 +106,5 @@ func MountRepositoryHandlers(r *gin.Engine, conn *sql.DB) {
 	repoGroup.GET("/:id", repoHandlers.GetRepositoryHandle)
 	repoGroup.PUT("/:id", repoHandlers.UpdateRepositoryHandle)
 	repoGroup.DELETE("/:id", repoHandlers.DeleteRepositoryHandle)
-	r.POST("/git-webhook", repoHandlers.GitWebhookHandler)
+	r.POST("/gihub-hook", repoHandlers.GitWebhookHandler)
 }

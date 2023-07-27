@@ -89,6 +89,10 @@ func (h UserHandlers) UpdateUserHandler(c *gin.Context) {
 
 	var entityUser entity.EntityUser
 
+	id := strconv.Itoa(c.GetInt("id"))
+
+	entityUser.ID, _ = strconv.Atoi(id)
+
 	if err := c.ShouldBindJSON(&entityUser); err != nil {
 		handleError(c, err)
 		return
@@ -306,7 +310,7 @@ func MountUsersHandlers(gin *gin.Engine, conn *sql.DB) {
 	// user
 	group := gin.Group("/api/user")
 	group.POST("/", userHandlers.CreateUserHandler)
-	group.PUT("/", userHandlers.UpdateUserHandler)
+	group.PUT("/:id", userHandlers.UpdateUserHandler)
 	group.DELETE("/", userHandlers.DeleteUserHandler)
 	group.PUT("/password/:id", userHandlers.UpdatePasswordHandler)
 	group.GET("/", userHandlers.GetUsersHandler)

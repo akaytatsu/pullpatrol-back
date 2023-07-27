@@ -5,7 +5,7 @@ CREATE TABLE if not exists users (
     password VARCHAR(255) NOT NULL,
     is_admin boolean DEFAULT false NOT NULL,
     git_name VARCHAR(70) DEFAULT '',
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
 
@@ -13,7 +13,7 @@ create table if not exists repositories (
     id BIGSERIAL PRIMARY KEY,
     repository VARCHAR(220) NOT NULL,
     active boolean DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
 
@@ -30,7 +30,7 @@ create table if not exists pullrequest (
     deletions int NOT NULL,
     changed_files int NOT NULL,
     commits int NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
 
@@ -38,7 +38,7 @@ create table if not exists groups (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(90) NOT NULL,
     description text NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
 
@@ -46,17 +46,17 @@ CREATE TABLE IF NOT EXISTS group_user (
     id BIGSERIAL PRIMARY KEY,
     group_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     UNIQUE (group_id, user_id)
 );
 
 create table if not exists pullrequest_role (
     id BIGSERIAL PRIMARY KEY,
-    pullrequest_id BIGINT NOT NULL,
+    repository_id BIGINT NOT NULL,
     role_type VARCHAR(40) NOT NULL,
     description text NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
 
@@ -67,6 +67,6 @@ create table if not exists pullrequest_review (
     user_id BIGINT NOT NULL,
     status VARCHAR(40) NOT NULL,
     comment text NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );

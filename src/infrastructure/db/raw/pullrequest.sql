@@ -11,3 +11,19 @@ where number = $11 and repository_id = $12;
 
 -- name: GetPullRequest :one
 select * from pullrequest where id = $1;
+
+-- name: GetPullRequestRoles :many
+select * from pullrequest_role where repository_id = $1 order by id asc;
+
+-- name: GetPullRequestRole :one
+select * from pullrequest_role where id = $1;
+
+-- name: CreatePullRequestRole :one
+insert into pullrequest_role (repository_id, role_type, description, created_at, updated_at)
+values ($1, $2, $3, $4, $5) returning *;
+
+-- name: UpdatePullRequestRole :exec
+update pullrequest_role set role_type = $1, description = $2, updated_at = $3 where id = $4;
+
+-- name: DeletePullRequestRole :exec
+delete from pullrequest_role where id = $1;
