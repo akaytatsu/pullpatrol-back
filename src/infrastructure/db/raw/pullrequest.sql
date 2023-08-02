@@ -27,3 +27,19 @@ update pullrequest_role set role_type = $1, description = $2, updated_at = $3 wh
 
 -- name: DeletePullRequestRole :exec
 delete from pullrequest_role where id = $1;
+
+-- name: GetPullRequestReviews :many
+select * from pullrequest_review where pullrequest_id = $1 order by id asc;
+
+-- name: GetPullRequestReview :one
+select * from pullrequest_review where id = $1;
+
+-- name: CreatePullRequestReview :one
+insert into pullrequest_review (pullrequest_id, pullrequest_role_id, user_id, status, created_at, updated_at)
+values ($1, $2, $3, $4, $5, $6) returning *;
+
+-- name: UpdatePullRequestReview :exec
+update pullrequest_review set status = $1, comment = $2, updated_at = $3 where id = $4;
+
+-- name: DeletePullRequestReview :exec
+delete from pullrequest_review where id = $1;

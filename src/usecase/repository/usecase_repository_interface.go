@@ -23,6 +23,13 @@ type IRepositoryRepository interface {
 	CreatePullRequestRole(repositoryID int, pullRequestRole *entity.EntityPullRequestRole) error
 	UpdatePullRequestRole(pullRequestRoleID int, pullRequestRole *entity.EntityPullRequestRole) error
 	DeletePullRequestRole(pullRequestRoleID int) error
+
+	// pull request review
+	GetPullRequestReviews(pullRequestID int) (pullRequestReviews []entity.EntityPullRequestReview, err error)
+	GetPullRequestReview(pullRequestReviewID int) (pullRequestReview *entity.EntityPullRequestReview, err error)
+	CreatePullRequestReview(pullRequestID int, pullRequestReview *entity.EntityPullRequestReview) error
+	UpdatePullRequestReview(pullRequestReviewID int, pullRequestReview *entity.EntityPullRequestReview) error
+	DeletePullRequestReview(pullRequestReviewID int) error
 }
 
 //go:generate mockgen -destination=../../mocks/mock_usecase_repository.go -package=mocks app/usecase/repository IUsecaseRepository

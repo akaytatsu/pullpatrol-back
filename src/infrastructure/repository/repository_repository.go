@@ -249,3 +249,75 @@ func (r *RepositoryRepository) DeletePullRequestRole(pullRequestRoleID int) erro
 
 	return err
 }
+
+func (r *RepositoryRepository) GetPullRequestReviews(pullRequestID int) (pullRequestReviews []entity.EntityPullRequestReview, err error) {
+	context := context.Background()
+
+	results, err := r.queries.GetPullRequestReviews(context, int64(pullRequestID))
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range results {
+		pullRequestReviews = append(pullRequestReviews, entity.EntityPullRequestReview{
+			ID: int(result.ID),
+		})
+	}
+
+	return pullRequestReviews, err
+}
+
+func (r *RepositoryRepository) GetPullRequestReview(pullRequestReviewID int) (pullRequestReview *entity.EntityPullRequestReview, err error) {
+	context := context.Background()
+
+	result, err := r.queries.GetPullRequestReview(context, int64(pullRequestReviewID))
+
+	if err != nil {
+		return nil, err
+	}
+
+	pullRequestReview = &entity.EntityPullRequestReview{
+		ID: int(result.ID),
+	}
+
+	return pullRequestReview, err
+}
+
+func (r *RepositoryRepository) CreatePullRequestReview(pullRequestID int, pullRequestReview *entity.EntityPullRequestReview) error {
+	context := context.Background()
+
+	model, err := r.queries.CreatePullRequestReview(context, queries.CreatePullRequestReviewParams{
+		PullrequestID:     int64(pullRequestID),
+		PullrequestRoleID: int64(pullRequestReview.PullRequestRoleID),
+		UserID:            int64(pullRequestReview.UserID),
+		Status:            pullRequestReview.Status,
+		CreatedAt:         time.Now(),
+		UpdatedAt:         time.Now(),
+	})
+
+	pullRequestReview.ID = int(model.ID)
+
+	return err
+}
+
+func (r *RepositoryRepository) UpdatePullRequestReview(pullRequestReviewID int, pullRequestReview *entity.EntityPullRequestReview) error {
+	context := context.Background()
+
+	err := r.queries.UpdatePullRequestReview(context, queries.UpdatePullRequestReviewParams{
+		ID:        int64(pullRequestReviewID),
+		Comment:   pullRequestReview.Comment,
+		Status:    pullRequestReview.Status,
+		UpdatedAt: time.Now(),
+	})
+
+	return err
+}
+
+func (r *RepositoryRepository) DeletePullRequestReview(pullRequestReviewID int) error {
+	context := context.Background()
+
+	err := r.queries.DeletePullRequestReview(context, int64(pullRequestReviewID))
+
+	return err
+}

@@ -67,6 +67,43 @@ func (q *Queries) CreatePullRequest(ctx context.Context, arg CreatePullRequestPa
 	return err
 }
 
+const createPullRequestReview = `-- name: CreatePullRequestReview :one
+insert into pullrequest_review (pullrequest_id, pullrequest_role_id, user_id, status, created_at, updated_at)
+values ($1, $2, $3, $4, $5, $6) returning id, pullrequest_id, pullrequest_role_id, user_id, status, comment, created_at, updated_at
+`
+
+type CreatePullRequestReviewParams struct {
+	PullrequestID     int64     `json:"pullrequest_id"`
+	PullrequestRoleID int64     `json:"pullrequest_role_id"`
+	UserID            int64     `json:"user_id"`
+	Status            string    `json:"status"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
+}
+
+func (q *Queries) CreatePullRequestReview(ctx context.Context, arg CreatePullRequestReviewParams) (PullrequestReview, error) {
+	row := q.queryRow(ctx, q.createPullRequestReviewStmt, createPullRequestReview,
+		arg.PullrequestID,
+		arg.PullrequestRoleID,
+		arg.UserID,
+		arg.Status,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
+	var i PullrequestReview
+	err := row.Scan(
+		&i.ID,
+		&i.PullrequestID,
+		&i.PullrequestRoleID,
+		&i.UserID,
+		&i.Status,
+		&i.Comment,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createPullRequestRole = `-- name: CreatePullRequestRole :one
 insert into pullrequest_role (repository_id, role_type, description, created_at, updated_at)
 values ($1, $2, $3, $4, $5) returning id, repository_id, role_type, description, created_at, updated_at
@@ -98,6 +135,15 @@ func (q *Queries) CreatePullRequestRole(ctx context.Context, arg CreatePullReque
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const deletePullRequestReview = `-- name: DeletePullRequestReview :exec
+delete from pullrequest_review where id = $1
+`
+
+func (q *Queries) DeletePullRequestReview(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.deletePullRequestReviewStmt, deletePullRequestReview, id)
+	return err
 }
 
 const deletePullRequestRole = `-- name: DeletePullRequestRole :exec
@@ -133,6 +179,62 @@ func (q *Queries) GetPullRequest(ctx context.Context, id int64) (Pullrequest, er
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getPullRequestReview = `-- name: GetPullRequestReview :one
+select id, pullrequest_id, pullrequest_role_id, user_id, status, comment, created_at, updated_at from pullrequest_review where id = $1
+`
+
+func (q *Queries) GetPullRequestReview(ctx context.Context, id int64) (PullrequestReview, error) {
+	row := q.queryRow(ctx, q.getPullRequestReviewStmt, getPullRequestReview, id)
+	var i PullrequestReview
+	err := row.Scan(
+		&i.ID,
+		&i.PullrequestID,
+		&i.PullrequestRoleID,
+		&i.UserID,
+		&i.Status,
+		&i.Comment,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getPullRequestReviews = `-- name: GetPullRequestReviews :many
+select id, pullrequest_id, pullrequest_role_id, user_id, status, comment, created_at, updated_at from pullrequest_review where pullrequest_id = $1 order by id asc
+`
+
+func (q *Queries) GetPullRequestReviews(ctx context.Context, pullrequestID int64) ([]PullrequestReview, error) {
+	rows, err := q.query(ctx, q.getPullRequestReviewsStmt, getPullRequestReviews, pullrequestID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PullrequestReview
+	for rows.Next() {
+		var i PullrequestReview
+		if err := rows.Scan(
+			&i.ID,
+			&i.PullrequestID,
+			&i.PullrequestRoleID,
+			&i.UserID,
+			&i.Status,
+			&i.Comment,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getPullRequestRole = `-- name: GetPullRequestRole :one
@@ -221,6 +323,27 @@ func (q *Queries) UpdatePullRequest(ctx context.Context, arg UpdatePullRequestPa
 		arg.Commits,
 		arg.Number,
 		arg.RepositoryID,
+	)
+	return err
+}
+
+const updatePullRequestReview = `-- name: UpdatePullRequestReview :exec
+update pullrequest_review set status = $1, comment = $2, updated_at = $3 where id = $4
+`
+
+type UpdatePullRequestReviewParams struct {
+	Status    string    `json:"status"`
+	Comment   string    `json:"comment"`
+	UpdatedAt time.Time `json:"updated_at"`
+	ID        int64     `json:"id"`
+}
+
+func (q *Queries) UpdatePullRequestReview(ctx context.Context, arg UpdatePullRequestReviewParams) error {
+	_, err := q.exec(ctx, q.updatePullRequestReviewStmt, updatePullRequestReview,
+		arg.Status,
+		arg.Comment,
+		arg.UpdatedAt,
+		arg.ID,
 	)
 	return err
 }

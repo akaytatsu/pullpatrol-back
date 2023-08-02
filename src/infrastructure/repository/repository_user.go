@@ -33,7 +33,7 @@ func (u *RepositoryUser) GetByID(id int) (user *entity.EntityUser, err error) {
 		Name:      qUser.Name,
 		Email:     qUser.Email,
 		Password:  qUser.Password,
-		CreatedAt: qUser.CreatedAt.Time,
+		CreatedAt: qUser.CreatedAt,
 		UpdatedAt: qUser.UpdatedAt,
 	}
 
@@ -51,7 +51,7 @@ func (u *RepositoryUser) GetByMail(email string) (user *entity.EntityUser, err e
 		Name:      qUser.Name,
 		Email:     qUser.Email,
 		Password:  qUser.Password,
-		CreatedAt: qUser.CreatedAt.Time,
+		CreatedAt: qUser.CreatedAt,
 		UpdatedAt: qUser.UpdatedAt,
 	}
 
@@ -80,7 +80,7 @@ func (u *RepositoryUser) CreateUser(user *entity.EntityUser) error {
 
 	user.ID = int(data.ID)
 	user.IsAdmin = data.IsAdmin
-	user.CreatedAt = data.CreatedAt.Time
+	user.CreatedAt = data.CreatedAt
 	user.UpdatedAt = data.UpdatedAt
 	user.Email = data.Email
 	user.Name = data.Name
@@ -144,7 +144,7 @@ func (u *RepositoryUser) GetUsers() (users []entity.EntityUser, err error) {
 			Name:      qUser.Name,
 			Email:     qUser.Email,
 			IsAdmin:   qUser.IsAdmin,
-			CreatedAt: qUser.CreatedAt.Time,
+			CreatedAt: qUser.CreatedAt,
 			UpdatedAt: qUser.UpdatedAt,
 		}
 
@@ -167,7 +167,7 @@ func (u *RepositoryUser) GetUser(id int) (user *entity.EntityUser, err error) {
 		ID:        int(qUser.ID),
 		Name:      qUser.Name,
 		Email:     qUser.Email,
-		CreatedAt: qUser.CreatedAt.Time,
+		CreatedAt: qUser.CreatedAt,
 		UpdatedAt: qUser.UpdatedAt,
 	}
 
@@ -186,7 +186,7 @@ func (u *RepositoryUser) GetGroups() (groups []entity.EntityGroup, err error) {
 		group := entity.EntityGroup{
 			ID:        int(qGroup.ID),
 			Name:      qGroup.Name,
-			CreatedAt: qGroup.CreatedAt.Time,
+			CreatedAt: qGroup.CreatedAt,
 			UpdatedAt: qGroup.UpdatedAt,
 		}
 
@@ -210,7 +210,7 @@ func (u *RepositoryUser) GetUsersByGroup(groupID int) (users []entity.EntityUser
 			Name:      qUser.Name,
 			Email:     qUser.Email,
 			IsAdmin:   qUser.IsAdmin,
-			CreatedAt: qUser.CreatedAt.Time,
+			CreatedAt: qUser.CreatedAt,
 			UpdatedAt: qUser.UpdatedAt,
 		}
 
@@ -232,7 +232,7 @@ func (u *RepositoryUser) GetGroup(groupID int) (group *entity.EntityGroup, err e
 	group = &entity.EntityGroup{
 		ID:        int(qGroup.ID),
 		Name:      qGroup.Name,
-		CreatedAt: qGroup.CreatedAt.Time,
+		CreatedAt: qGroup.CreatedAt,
 		UpdatedAt: qGroup.UpdatedAt,
 	}
 
@@ -253,7 +253,7 @@ func (u *RepositoryUser) CreateGroup(group *entity.EntityGroup) error {
 	}
 
 	group.ID = int(data.ID)
-	group.CreatedAt = data.CreatedAt.Time
+	group.CreatedAt = data.CreatedAt
 	group.UpdatedAt = data.UpdatedAt
 
 	return nil

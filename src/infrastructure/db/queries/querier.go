@@ -17,16 +17,20 @@ type Querier interface {
 	CheckUserByID(ctx context.Context, id int64) (int64, error)
 	CreateGroup(ctx context.Context, arg CreateGroupParams) (Group, error)
 	CreatePullRequest(ctx context.Context, arg CreatePullRequestParams) error
+	CreatePullRequestReview(ctx context.Context, arg CreatePullRequestReviewParams) (PullrequestReview, error)
 	CreatePullRequestRole(ctx context.Context, arg CreatePullRequestRoleParams) (PullrequestRole, error)
 	CreateRepository(ctx context.Context, arg CreateRepositoryParams) (Repository, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteGroup(ctx context.Context, id int64) error
+	DeletePullRequestReview(ctx context.Context, id int64) error
 	DeletePullRequestRole(ctx context.Context, id int64) error
 	DeleteRepository(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	GetGroup(ctx context.Context, id int64) (Group, error)
 	GetGroups(ctx context.Context) ([]Group, error)
 	GetPullRequest(ctx context.Context, id int64) (Pullrequest, error)
+	GetPullRequestReview(ctx context.Context, id int64) (PullrequestReview, error)
+	GetPullRequestReviews(ctx context.Context, pullrequestID int64) ([]PullrequestReview, error)
 	GetPullRequestRole(ctx context.Context, id int64) (PullrequestRole, error)
 	GetPullRequestRoles(ctx context.Context, repositoryID int64) ([]PullrequestRole, error)
 	GetRepositories(ctx context.Context) ([]Repository, error)
@@ -39,6 +43,7 @@ type Querier interface {
 	RemoveUserFromGroup(ctx context.Context, arg RemoveUserFromGroupParams) error
 	UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Group, error)
 	UpdatePullRequest(ctx context.Context, arg UpdatePullRequestParams) error
+	UpdatePullRequestReview(ctx context.Context, arg UpdatePullRequestReviewParams) error
 	UpdatePullRequestRole(ctx context.Context, arg UpdatePullRequestRoleParams) error
 	UpdateRepository(ctx context.Context, arg UpdateRepositoryParams) (Repository, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
