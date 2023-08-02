@@ -62,6 +62,62 @@ func (mr *MockIRepositoryRepositoryMockRecorder) CreateOrUpdateRepository(arg0 i
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrUpdateRepository", reflect.TypeOf((*MockIRepositoryRepository)(nil).CreateOrUpdateRepository), arg0)
 }
 
+// CreatePullRequestReview mocks base method.
+func (m *MockIRepositoryRepository) CreatePullRequestReview(arg0 int, arg1 *entity.EntityPullRequestReview) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePullRequestReview", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreatePullRequestReview indicates an expected call of CreatePullRequestReview.
+func (mr *MockIRepositoryRepositoryMockRecorder) CreatePullRequestReview(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePullRequestReview", reflect.TypeOf((*MockIRepositoryRepository)(nil).CreatePullRequestReview), arg0, arg1)
+}
+
+// CreatePullRequestRole mocks base method.
+func (m *MockIRepositoryRepository) CreatePullRequestRole(arg0 int, arg1 *entity.EntityPullRequestRole) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePullRequestRole", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreatePullRequestRole indicates an expected call of CreatePullRequestRole.
+func (mr *MockIRepositoryRepositoryMockRecorder) CreatePullRequestRole(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePullRequestRole", reflect.TypeOf((*MockIRepositoryRepository)(nil).CreatePullRequestRole), arg0, arg1)
+}
+
+// DeletePullRequestReview mocks base method.
+func (m *MockIRepositoryRepository) DeletePullRequestReview(arg0 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePullRequestReview", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePullRequestReview indicates an expected call of DeletePullRequestReview.
+func (mr *MockIRepositoryRepositoryMockRecorder) DeletePullRequestReview(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePullRequestReview", reflect.TypeOf((*MockIRepositoryRepository)(nil).DeletePullRequestReview), arg0)
+}
+
+// DeletePullRequestRole mocks base method.
+func (m *MockIRepositoryRepository) DeletePullRequestRole(arg0 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePullRequestRole", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePullRequestRole indicates an expected call of DeletePullRequestRole.
+func (mr *MockIRepositoryRepositoryMockRecorder) DeletePullRequestRole(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePullRequestRole", reflect.TypeOf((*MockIRepositoryRepository)(nil).DeletePullRequestRole), arg0)
+}
+
 // DeleteRepository mocks base method.
 func (m *MockIRepositoryRepository) DeleteRepository(arg0 *entity.EntityRepository) error {
 	m.ctrl.T.Helper()
@@ -106,6 +162,66 @@ func (mr *MockIRepositoryRepositoryMockRecorder) GetByRepo(arg0 interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRepo", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetByRepo), arg0)
 }
 
+// GetPullRequestReview mocks base method.
+func (m *MockIRepositoryRepository) GetPullRequestReview(arg0 int) (*entity.EntityPullRequestReview, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPullRequestReview", arg0)
+	ret0, _ := ret[0].(*entity.EntityPullRequestReview)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPullRequestReview indicates an expected call of GetPullRequestReview.
+func (mr *MockIRepositoryRepositoryMockRecorder) GetPullRequestReview(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPullRequestReview", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetPullRequestReview), arg0)
+}
+
+// GetPullRequestReviews mocks base method.
+func (m *MockIRepositoryRepository) GetPullRequestReviews(arg0 int) ([]entity.EntityPullRequestReview, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPullRequestReviews", arg0)
+	ret0, _ := ret[0].([]entity.EntityPullRequestReview)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPullRequestReviews indicates an expected call of GetPullRequestReviews.
+func (mr *MockIRepositoryRepositoryMockRecorder) GetPullRequestReviews(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPullRequestReviews", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetPullRequestReviews), arg0)
+}
+
+// GetPullRequestRole mocks base method.
+func (m *MockIRepositoryRepository) GetPullRequestRole(arg0 int) (*entity.EntityPullRequestRole, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPullRequestRole", arg0)
+	ret0, _ := ret[0].(*entity.EntityPullRequestRole)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPullRequestRole indicates an expected call of GetPullRequestRole.
+func (mr *MockIRepositoryRepositoryMockRecorder) GetPullRequestRole(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPullRequestRole", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetPullRequestRole), arg0)
+}
+
+// GetPullRequestRoles mocks base method.
+func (m *MockIRepositoryRepository) GetPullRequestRoles(arg0 int) ([]entity.EntityPullRequestRole, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPullRequestRoles", arg0)
+	ret0, _ := ret[0].([]entity.EntityPullRequestRole)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPullRequestRoles indicates an expected call of GetPullRequestRoles.
+func (mr *MockIRepositoryRepositoryMockRecorder) GetPullRequestRoles(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPullRequestRoles", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetPullRequestRoles), arg0)
+}
+
 // GetRepositories mocks base method.
 func (m *MockIRepositoryRepository) GetRepositories() ([]entity.EntityRepository, error) {
 	m.ctrl.T.Helper()
@@ -119,4 +235,32 @@ func (m *MockIRepositoryRepository) GetRepositories() ([]entity.EntityRepository
 func (mr *MockIRepositoryRepositoryMockRecorder) GetRepositories() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRepositories", reflect.TypeOf((*MockIRepositoryRepository)(nil).GetRepositories))
+}
+
+// UpdatePullRequestReview mocks base method.
+func (m *MockIRepositoryRepository) UpdatePullRequestReview(arg0 int, arg1 *entity.EntityPullRequestReview) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePullRequestReview", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePullRequestReview indicates an expected call of UpdatePullRequestReview.
+func (mr *MockIRepositoryRepositoryMockRecorder) UpdatePullRequestReview(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePullRequestReview", reflect.TypeOf((*MockIRepositoryRepository)(nil).UpdatePullRequestReview), arg0, arg1)
+}
+
+// UpdatePullRequestRole mocks base method.
+func (m *MockIRepositoryRepository) UpdatePullRequestRole(arg0 int, arg1 *entity.EntityPullRequestRole) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePullRequestRole", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePullRequestRole indicates an expected call of UpdatePullRequestRole.
+func (mr *MockIRepositoryRepositoryMockRecorder) UpdatePullRequestRole(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePullRequestRole", reflect.TypeOf((*MockIRepositoryRepository)(nil).UpdatePullRequestRole), arg0, arg1)
 }

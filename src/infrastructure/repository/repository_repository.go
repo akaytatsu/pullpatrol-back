@@ -109,6 +109,8 @@ func (r *RepositoryRepository) GetRepositories() (repositories []entity.EntityRe
 
 	context := context.Background()
 
+	repositories = make([]entity.EntityRepository, 0)
+
 	results, err := r.queries.GetRepositories(context)
 
 	if err != nil {

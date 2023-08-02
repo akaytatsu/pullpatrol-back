@@ -8,8 +8,12 @@ import (
 	"app/config"
 	"app/infrastructure/db"
 
+	docs "app/docs"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func setupDatabase() *sql.DB {
@@ -31,6 +35,13 @@ func setupRouter(conn *sql.DB) *gin.Engine {
 
 	handlers.MountUsersHandlers(r, conn)
 	handlers.MountRepositoryHandlers(r, conn)
+
+	docs.SwaggerInfo.BasePath = "/api"
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+	ginSwagger.WrapHandler(swaggerfiles.Handler,
+		ginSwagger.URL("http://localhost:8080/swagger/doc.json"),
+		ginSwagger.DefaultModelsExpandDepth(-1))
 
 	return r
 }

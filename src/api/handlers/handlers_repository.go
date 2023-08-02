@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	middleware "app/api/middleware"
 	"app/entity"
 	"app/infrastructure/git/github"
 	"app/infrastructure/repository"
 	usecase_repository "app/usecase/repository"
+	usecase_user "app/usecase/user"
 	"database/sql"
 	"io"
 	"net/http"
@@ -21,6 +23,15 @@ func NewRepositoryHandler(usecaseRepo usecase_repository.IUsecaseRepository) *Re
 	return &RepositoryHandlers{UsecaseRepository: usecaseRepo}
 }
 
+// @Summary Get Repositories
+// @Schemes
+// @Description get repositories
+// @Tags repository
+// @Accept json
+// @Produce json
+// @Param repository body entity.EntityRepository true "Repository"
+// @Success 200 {object} entity.EntityRepository
+// @Router /api/repository [get]
 func (h RepositoryHandlers) GetRepositoriesHandle(c *gin.Context) {
 	repositories, err := h.UsecaseRepository.GetRepositories()
 	if handleError(c, err) {
@@ -100,7 +111,12 @@ func MountRepositoryHandlers(r *gin.Engine, conn *sql.DB) {
 		),
 	)
 
+	usecaseUser := usecase_user.NewService(
+		repository.NewRepositoryUser(conn),
+	)
+
 	repoGroup := r.Group("/api/repository")
+	repoGroup.Use(middleware.AuthenticatedMiddleware(usecaseUser))
 	repoGroup.GET("", repoHandlers.GetRepositoriesHandle)
 	repoGroup.POST("", repoHandlers.CreateRepositoryHandle)
 	repoGroup.GET("/:id", repoHandlers.GetRepositoryHandle)

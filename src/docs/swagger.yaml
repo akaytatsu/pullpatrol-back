@@ -1,0 +1,40 @@
+definitions:
+  entity.EntityRepository:
+    properties:
+      active:
+        type: boolean
+      id:
+        type: integer
+      repository:
+        maxLength: 80
+        minLength: 2
+        type: string
+    required:
+    - repository
+    type: object
+info:
+  contact: {}
+paths:
+  /api/repository:
+    get:
+      consumes:
+      - application/json
+      description: get repositories
+      parameters:
+      - description: Repository
+        in: body
+        name: repository
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityRepository'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.EntityRepository'
+      summary: Get Repositories
+      tags:
+      - repository
+swagger: "2.0"

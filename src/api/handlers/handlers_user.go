@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strconv"
 
+	middleware "app/api/middleware"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -309,6 +311,7 @@ func MountUsersHandlers(gin *gin.Engine, conn *sql.DB) {
 
 	// user
 	group := gin.Group("/api/user")
+	group.Use(middleware.AuthenticatedMiddleware(userHandlers.UsecaseUser))
 	group.POST("/", userHandlers.CreateUserHandler)
 	group.PUT("/:id", userHandlers.UpdateUserHandler)
 	group.DELETE("/", userHandlers.DeleteUserHandler)
@@ -318,6 +321,7 @@ func MountUsersHandlers(gin *gin.Engine, conn *sql.DB) {
 
 	// group
 	group = gin.Group("/api/group")
+	group.Use(middleware.AuthenticatedMiddleware(userHandlers.UsecaseUser))
 	group.GET("/", userHandlers.GetGroupsHandler)
 	group.GET("/:groupID", userHandlers.GetGroupHandler)
 	group.GET("/:groupID/users", userHandlers.GetUsersByGroupHandler)

@@ -1,0 +1,63 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/api/repository": {
+            "get": {
+                "description": "get repositories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "repository"
+                ],
+                "summary": "Get Repositories",
+                "parameters": [
+                    {
+                        "description": "Repository",
+                        "name": "repository",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityRepository"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityRepository"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entity.EntityRepository": {
+            "type": "object",
+            "required": [
+                "repository"
+            ],
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "repository": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "minLength": 2
+                }
+            }
+        }
+    }
+}
