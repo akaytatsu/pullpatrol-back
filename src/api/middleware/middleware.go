@@ -28,7 +28,7 @@ func AuthenticatedMiddleware(usercase usecase_user.IUsecaseUser) gin.HandlerFunc
 		if err == nil {
 
 			// set user to context
-			c.Set("user", user)
+			c.Set("user", *user)
 
 			c.Next()
 		} else {

@@ -156,7 +156,7 @@ func (q *Queries) DeletePullRequestRole(ctx context.Context, id int64) error {
 }
 
 const getPullRequest = `-- name: GetPullRequest :one
-select id, number, action, repository_id, status, url, title, closed_at, additions, deletions, changed_files, commits, created_at, updated_at from pullrequest where id = $1
+select id, number, action, repository_id, status, url, title, closed_at, additions, deletions, changed_files, commits, full_data_json, created_at, updated_at from pullrequest where id = $1
 `
 
 func (q *Queries) GetPullRequest(ctx context.Context, id int64) (Pullrequest, error) {
@@ -175,6 +175,7 @@ func (q *Queries) GetPullRequest(ctx context.Context, id int64) (Pullrequest, er
 		&i.Deletions,
 		&i.ChangedFiles,
 		&i.Commits,
+		&i.FullDataJson,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

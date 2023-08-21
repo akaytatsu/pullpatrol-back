@@ -105,9 +105,11 @@ migrate_clean: show_env
 
 make sqlc_generate: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app bash -c "cd /app/infrastructure/db && sqlc generate"
-	sudo chown -R "${USER}:${USER}" ./
+	if [ "${OSFLAG}" == "linux" ]; then \
+		sudo chown -R "${USER}:${USER}" .; \
+	fi
 
 _clean_database: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec db bash -c "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c 'drop schema public cascade; create schema public;'"
 
-reset_migrations: show_env _clean_database migrate
+reset_migrations: show_env _clean_database migrate sqlc_generate

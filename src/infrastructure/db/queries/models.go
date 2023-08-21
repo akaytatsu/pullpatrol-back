@@ -38,6 +38,7 @@ type Pullrequest struct {
 	Deletions    int32        `json:"deletions"`
 	ChangedFiles int32        `json:"changed_files"`
 	Commits      int32        `json:"commits"`
+	FullDataJson string       `json:"full_data_json"`
 	CreatedAt    time.Time    `json:"created_at"`
 	UpdatedAt    time.Time    `json:"updated_at"`
 }
@@ -64,7 +65,10 @@ type PullrequestRole struct {
 
 type Repository struct {
 	ID         int64     `json:"id"`
+	Label      string    `json:"label"`
 	Repository string    `json:"repository"`
+	UserID     int64     `json:"user_id"`
+	Driver     string    `json:"driver"`
 	Active     bool      `json:"active"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`

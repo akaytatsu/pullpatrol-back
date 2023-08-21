@@ -22,21 +22,34 @@ func (q *Queries) CheckRepositoryExists(ctx context.Context, repository string) 
 }
 
 const createRepository = `-- name: CreateRepository :one
-insert into repositories (repository, active, updated_at) values ($1, $2, $3) RETURNING id, repository, active, created_at, updated_at
+insert into repositories (repository, active, label, driver, user_id, updated_at) values ($1, $2, $3, $4, $5, $6) RETURNING id, label, repository, user_id, driver, active, created_at, updated_at
 `
 
 type CreateRepositoryParams struct {
 	Repository string    `json:"repository"`
 	Active     bool      `json:"active"`
+	Label      string    `json:"label"`
+	Driver     string    `json:"driver"`
+	UserID     int64     `json:"user_id"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateRepository(ctx context.Context, arg CreateRepositoryParams) (Repository, error) {
-	row := q.queryRow(ctx, q.createRepositoryStmt, createRepository, arg.Repository, arg.Active, arg.UpdatedAt)
+	row := q.queryRow(ctx, q.createRepositoryStmt, createRepository,
+		arg.Repository,
+		arg.Active,
+		arg.Label,
+		arg.Driver,
+		arg.UserID,
+		arg.UpdatedAt,
+	)
 	var i Repository
 	err := row.Scan(
 		&i.ID,
+		&i.Label,
 		&i.Repository,
+		&i.UserID,
+		&i.Driver,
 		&i.Active,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -54,7 +67,7 @@ func (q *Queries) DeleteRepository(ctx context.Context, id int64) error {
 }
 
 const getRepositories = `-- name: GetRepositories :many
-select id, repository, active, created_at, updated_at from repositories order by id asc
+select id, label, repository, user_id, driver, active, created_at, updated_at from repositories order by id asc
 `
 
 func (q *Queries) GetRepositories(ctx context.Context) ([]Repository, error) {
@@ -68,7 +81,10 @@ func (q *Queries) GetRepositories(ctx context.Context) ([]Repository, error) {
 		var i Repository
 		if err := rows.Scan(
 			&i.ID,
+			&i.Label,
 			&i.Repository,
+			&i.UserID,
+			&i.Driver,
 			&i.Active,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -87,7 +103,7 @@ func (q *Queries) GetRepositories(ctx context.Context) ([]Repository, error) {
 }
 
 const getRepositoryByID = `-- name: GetRepositoryByID :one
-select id, repository, active, created_at, updated_at from repositories where id = $1
+select id, label, repository, user_id, driver, active, created_at, updated_at from repositories where id = $1
 `
 
 func (q *Queries) GetRepositoryByID(ctx context.Context, id int64) (Repository, error) {
@@ -95,7 +111,10 @@ func (q *Queries) GetRepositoryByID(ctx context.Context, id int64) (Repository, 
 	var i Repository
 	err := row.Scan(
 		&i.ID,
+		&i.Label,
 		&i.Repository,
+		&i.UserID,
+		&i.Driver,
 		&i.Active,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -104,7 +123,7 @@ func (q *Queries) GetRepositoryByID(ctx context.Context, id int64) (Repository, 
 }
 
 const getRepositoryByRepository = `-- name: GetRepositoryByRepository :one
-select id, repository, active, created_at, updated_at from repositories where repository = $1
+select id, label, repository, user_id, driver, active, created_at, updated_at from repositories where repository = $1
 `
 
 func (q *Queries) GetRepositoryByRepository(ctx context.Context, repository string) (Repository, error) {
@@ -112,7 +131,10 @@ func (q *Queries) GetRepositoryByRepository(ctx context.Context, repository stri
 	var i Repository
 	err := row.Scan(
 		&i.ID,
+		&i.Label,
 		&i.Repository,
+		&i.UserID,
+		&i.Driver,
 		&i.Active,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -121,7 +143,7 @@ func (q *Queries) GetRepositoryByRepository(ctx context.Context, repository stri
 }
 
 const updateRepository = `-- name: UpdateRepository :one
-update repositories set repository = $1, active = $2, updated_at = $3 where id = $4 RETURNING id, repository, active, created_at, updated_at
+update repositories set repository = $1, active = $2, updated_at = $3 where id = $4 RETURNING id, label, repository, user_id, driver, active, created_at, updated_at
 `
 
 type UpdateRepositoryParams struct {
@@ -141,7 +163,10 @@ func (q *Queries) UpdateRepository(ctx context.Context, arg UpdateRepositoryPara
 	var i Repository
 	err := row.Scan(
 		&i.ID,
+		&i.Label,
 		&i.Repository,
+		&i.UserID,
+		&i.Driver,
 		&i.Active,
 		&i.CreatedAt,
 		&i.UpdatedAt,

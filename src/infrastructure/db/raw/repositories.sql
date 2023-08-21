@@ -8,7 +8,7 @@ select * from repositories where repository = $1;
 select count(*) from repositories where repository = $1;
 
 -- name: CreateRepository :one
-insert into repositories (repository, active, updated_at) values ($1, $2, $3) RETURNING *;
+insert into repositories (repository, active, label, driver, user_id, updated_at) values ($1, $2, $3, $4, $5, $6) RETURNING *;
 
 -- name: UpdateRepository :one
 update repositories set repository = $1, active = $2, updated_at = $3 where id = $4 RETURNING *;

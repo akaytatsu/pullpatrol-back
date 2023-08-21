@@ -77,6 +77,9 @@ func (r *RepositoryRepository) CreateOrUpdateRepository(repository *entity.Entit
 		data, err = r.queries.CreateRepository(context, queries.CreateRepositoryParams{
 			Repository: repository.Repository,
 			Active:     repository.Active,
+			Label:      repository.Label,
+			Driver:     repository.Driver,
+			UserID:     int64(repository.UserID),
 			UpdatedAt:  time.Now(),
 		})
 	}

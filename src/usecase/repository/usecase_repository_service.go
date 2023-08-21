@@ -23,7 +23,7 @@ func (u *UsecaseRepository) Create(repository *entity.EntityRepository) error {
 		return err
 	}
 
-	repository.Active = true
+	// repository.Active = true
 
 	return u.repo.CreateOrUpdateRepository(repository)
 }

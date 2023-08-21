@@ -45,6 +45,10 @@ func (h RepositoryHandlers) CreateRepositoryHandle(c *gin.Context) {
 	if err := c.ShouldBindJSON(&repository); handleError(c, err) {
 		return
 	}
+
+	user := c.MustGet("user").(entity.EntityUser)
+	repository.UserID = user.ID
+
 	if err := h.UsecaseRepository.Create(&repository); handleError(c, err) {
 		return
 	}

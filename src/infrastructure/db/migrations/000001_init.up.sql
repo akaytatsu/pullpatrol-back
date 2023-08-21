@@ -11,7 +11,10 @@ CREATE TABLE if not exists users (
 
 create table if not exists repositories (
     id BIGSERIAL PRIMARY KEY,
+    label VARCHAR(90) NOT NULL,
     repository VARCHAR(220) NOT NULL,
+    user_id BIGINT NOT NULL,
+    driver VARCHAR(20) NOT NULL,
     active boolean DEFAULT true NOT NULL,
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP NOT NULL
@@ -30,6 +33,7 @@ create table if not exists pullrequest (
     deletions int NOT NULL,
     changed_files int NOT NULL,
     commits int NOT NULL,
+    full_data_json text NOT NULL default '{}',
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
