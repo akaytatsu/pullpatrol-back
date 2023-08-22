@@ -1,12 +1,12 @@
 package entity
 
-import "time"
+import (
+	"gorm.io/gorm"
+)
 
 type EntityPullRequestRole struct {
-	ID            int
+	gorm.Model
 	PullRequestID int
 	RoleType      string
 	Description   string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
 }

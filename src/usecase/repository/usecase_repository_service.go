@@ -66,7 +66,7 @@ func (u *UsecaseRepository) ProccessPullRequest(git git.GitInterface, payload []
 		entityPR = entity.EntityPullRequest{
 			Number:        structuredData.PullRequest.Number,
 			Repository:    *repository,
-			RepositoryID:  repository.ID,
+			RepositoryID:  int(repository.ID),
 			Title:         structuredData.PullRequest.Title,
 			Action:        structuredData.Action,
 			Status:        structuredData.PullRequest.State,

@@ -4,16 +4,15 @@ import (
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type EntityUser struct {
-	ID        int
-	Name      string    `json:"name" validate:"required,min=2,max=50"`
-	Email     string    `json:"email"      validate:"required,email"`
-	Password  string    `json:"password"   validate:"required,min=8,max=120"`
-	IsAdmin   bool      `json:"is_admin"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	gorm.Model
+	Name     string `json:"name" validate:"required,min=2,max=50" gorm:"not null"`
+	Email    string `json:"email"      validate:"required,email" gorm:"unique;not null"`
+	Password string `json:"password"   validate:"required,min=8,max=120" gorm:"not null"`
+	IsAdmin  bool   `json:"is_admin"  validate:"required" gorm:"default:false"`
 }
 
 func NewUser(userParam EntityUser) (*EntityUser, error) {

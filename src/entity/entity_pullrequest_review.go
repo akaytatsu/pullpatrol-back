@@ -1,14 +1,12 @@
 package entity
 
-import "time"
+import "gorm.io/gorm"
 
 type EntityPullRequestReview struct {
-	ID                int
+	gorm.Model
 	PullRequestID     int
 	PullRequestRoleID int
 	UserID            int
 	Status            string
 	Comment           string
-	CreatedAt         time.Time
-	UpdatedAt         time.Time
 }

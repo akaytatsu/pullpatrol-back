@@ -7,12 +7,12 @@ import (
 	"app/infrastructure/repository"
 	usecase_repository "app/usecase/repository"
 	usecase_user "app/usecase/user"
-	"database/sql"
 	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type RepositoryHandlers struct {
@@ -47,7 +47,7 @@ func (h RepositoryHandlers) CreateRepositoryHandle(c *gin.Context) {
 	}
 
 	user := c.MustGet("user").(entity.EntityUser)
-	repository.UserID = user.ID
+	repository.UserID = int(user.ID)
 
 	if err := h.UsecaseRepository.Create(&repository); handleError(c, err) {
 		return
@@ -107,7 +107,7 @@ func (h RepositoryHandlers) GitWebhookHandler(c *gin.Context) {
 	jsonResponse(c, http.StatusOK, gin.H{"message": "ok"})
 }
 
-func MountRepositoryHandlers(r *gin.Engine, conn *sql.DB) {
+func MountRepositoryHandlers(r *gin.Engine, conn *gorm.DB) {
 
 	repoHandlers := NewRepositoryHandler(
 		usecase_repository.NewService(

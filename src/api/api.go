@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"log"
 
 	"app/api/handlers"
@@ -14,14 +13,15 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/gorm"
 )
 
-func setupDatabase() *sql.DB {
+func setupDatabase() *gorm.DB {
 	conn := db.Connect()
 	return conn
 }
 
-func setupRouter(conn *sql.DB) *gin.Engine {
+func setupRouter(conn *gorm.DB) *gin.Engine {
 	r := gin.New()
 
 	config := cors.DefaultConfig()

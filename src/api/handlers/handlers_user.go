@@ -4,13 +4,13 @@ import (
 	"app/entity"
 	"app/infrastructure/repository"
 	usecase_user "app/usecase/user"
-	"database/sql"
 	"net/http"
 	"strconv"
 
 	middleware "app/api/middleware"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type LoginData struct {
@@ -93,7 +93,9 @@ func (h UserHandlers) UpdateUserHandler(c *gin.Context) {
 
 	id := strconv.Itoa(c.GetInt("id"))
 
-	entityUser.ID, _ = strconv.Atoi(id)
+	dataInt, _ := strconv.Atoi(id)
+
+	entityUser.ID = uint(dataInt)
 
 	if err := c.ShouldBindJSON(&entityUser); err != nil {
 		handleError(c, err)
@@ -295,7 +297,7 @@ func (h UserHandlers) RemoveUserFromGroupHandler(c *gin.Context) {
 
 }
 
-func MountUsersHandlers(gin *gin.Engine, conn *sql.DB) {
+func MountUsersHandlers(gin *gin.Engine, conn *gorm.DB) {
 
 	userHandlers := NewUserHandler(
 		usecase_user.NewService(

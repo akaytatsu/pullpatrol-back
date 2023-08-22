@@ -1,7 +1,9 @@
 package entity
 
+import "gorm.io/gorm"
+
 type EntityRepository struct {
-	ID         int    `json:"id"`
+	gorm.Model
 	Repository string `json:"repository" validate:"required,min=2,max=80"`
 	Label      string `json:"label" validate:"required,min=2,max=80"`
 	Driver     string `json:"driver" validate:"required,min=2,max=80"`

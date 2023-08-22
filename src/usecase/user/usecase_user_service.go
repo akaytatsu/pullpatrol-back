@@ -112,7 +112,7 @@ func (u *UseCaseUser) GetUserByToken(token string) (*entity.EntityUser, error) {
 func JWTTokenGenerator(u entity.EntityUser) (signedToken string, signedRefreshToken string, err error) {
 
 	claims := SignedDetails{
-		ID:    u.ID,
+		ID:    int(u.ID),
 		Name:  u.Name,
 		Email: u.Email,
 		StandardClaims: jwt.StandardClaims{

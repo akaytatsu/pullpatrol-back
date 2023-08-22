@@ -1,11 +1,9 @@
 package entity
 
-import "time"
+import "gorm.io/gorm"
 
 type EntityGroup struct {
-	ID          int
+	gorm.Model
 	Name        string
 	Description string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
 }
