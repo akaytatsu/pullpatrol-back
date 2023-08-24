@@ -25,7 +25,7 @@ func (u *RepositoryUser) GetByID(id int) (user *entity.EntityUser, err error) {
 
 func (u *RepositoryUser) GetByMail(email string) (user *entity.EntityUser, err error) {
 
-	u.db.Where("email = ?", email).First(&user)
+	err = u.db.Where("email = ?", email).First(&user).Error
 
 	return user, err
 }
@@ -124,7 +124,7 @@ func (u *RepositoryUser) UpdateGroup(group *entity.EntityGroup) error {
 }
 
 func (u *RepositoryUser) DeleteGroup(group *entity.EntityGroup) error {
-	return u.db.Delete(&group, group.Model.ID).Error
+	return u.db.Delete(&group, group.ID).Error
 }
 
 func (u *RepositoryUser) AddUserToGroup(userID, groupID int) error {

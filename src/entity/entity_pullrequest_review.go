@@ -1,9 +1,11 @@
 package entity
 
-import "gorm.io/gorm"
+import "time"
 
 type EntityPullRequestReview struct {
-	gorm.Model
+	ID                uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
 	PullRequestID     int
 	PullRequestRoleID int
 	UserID            int

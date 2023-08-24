@@ -12,6 +12,7 @@ func main() {
 	cron.StartCronJobs()
 
 	conn := db.Connect()
+	db.Migrations()
 
 	// create default user
 	repo := repository.NewRepositoryUser(conn)

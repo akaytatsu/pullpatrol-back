@@ -30,10 +30,9 @@ func (r *RepositoryRepository) GetByRepo(repo string) (repository *entity.Entity
 
 func (r *RepositoryRepository) CreateOrUpdateRepository(repository *entity.EntityRepository) error {
 
-	check := r.CheckExistsRepo(repository.Repository)
-
-	if check {
-		return r.db.Model(&repository).Where("repository = ?", repository.Repository).Updates(&repository).Error
+	if repository.ID > 0 {
+		err := r.db.Model(&repository).Where("id = ?", repository.ID).Save(&repository).Error
+		return err
 	}
 
 	return r.db.Create(&repository).Error
@@ -54,7 +53,7 @@ func (r *RepositoryRepository) GetRepositories() (repositories []entity.EntityRe
 
 	repositories = make([]entity.EntityRepository, 0)
 
-	r.db.Find(&repositories)
+	r.db.Debug().Joins("User").Omit("User__password").Find(&repositories)
 
 	return repositories, err
 }
@@ -66,7 +65,7 @@ func (r *RepositoryRepository) CreateOrUpdatePullRequest(pullRequest *entity.Ent
 	r.db.Model(entity.EntityPullRequest{}).Where("number = ? AND repository_id = ?", pullRequest.Number, pullRequest.RepositoryID).Find(&exists)
 
 	if exists {
-		return r.db.Model(&pullRequest).Where("number = ? AND repository_id = ?", pullRequest.Number, pullRequest.RepositoryID).Updates(&pullRequest).Error
+		return r.db.Model(&pullRequest).Where("number = ? AND repository_id = ?", pullRequest.Number, pullRequest.RepositoryID).Save(&pullRequest).Error
 	}
 
 	return r.db.Create(&pullRequest).Error
@@ -105,7 +104,7 @@ func (r *RepositoryRepository) CreatePullRequestRole(repositoryID int, pullReque
 
 func (r *RepositoryRepository) UpdatePullRequestRole(pullRequestRoleID int, pullRequestRole *entity.EntityPullRequestRole) error {
 
-	err := r.db.Model(&pullRequestRole).Where("id = ?", pullRequestRoleID).Updates(&pullRequestRole).Error
+	err := r.db.Model(&pullRequestRole).Where("id = ?", pullRequestRoleID).Save(&pullRequestRole).Error
 
 	return err
 }
@@ -141,7 +140,7 @@ func (r *RepositoryRepository) CreatePullRequestReview(pullRequestID int, pullRe
 
 func (r *RepositoryRepository) UpdatePullRequestReview(pullRequestReviewID int, pullRequestReview *entity.EntityPullRequestReview) error {
 
-	err := r.db.Model(&pullRequestReview).Where("id = ?", pullRequestReviewID).Updates(&pullRequestReview).Error
+	err := r.db.Model(&pullRequestReview).Where("id = ?", pullRequestReviewID).Save(&pullRequestReview).Error
 
 	return err
 }

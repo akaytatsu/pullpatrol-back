@@ -10,7 +10,6 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 )
 
 func TestUsecaseUser_LoginUser(t *testing.T) {
@@ -77,7 +76,7 @@ func TestUsecaseUser_GetUserByToken(t *testing.T) {
 
 	Convey("Valid token but user can be found", t, func() {
 		user := entity.EntityUser{
-			Model: gorm.Model{ID: 33},
+			ID: 33,
 		}
 
 		token, _, _ := usecase_user.JWTTokenGenerator(user)
@@ -92,9 +91,7 @@ func TestUsecaseUser_GetUserByToken(t *testing.T) {
 
 	Convey("Valid token and user can be found", t, func() {
 		user := entity.EntityUser{
-			Model: gorm.Model{
-				ID: 33,
-			},
+			ID: 33,
 		}
 
 		token, _, _ := usecase_user.JWTTokenGenerator(user)

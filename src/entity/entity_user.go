@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"encoding/json"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -8,11 +9,32 @@ import (
 )
 
 type EntityUser struct {
-	gorm.Model
-	Name     string `json:"name" validate:"required,min=2,max=50" gorm:"not null"`
-	Email    string `json:"email"      validate:"required,email" gorm:"unique;not null"`
-	Password string `json:"password"   validate:"required,min=8,max=120" gorm:"not null"`
-	IsAdmin  bool   `json:"is_admin"  validate:"required" gorm:"default:false"`
+	ID        uint           `gorm:"primaryKey" json:"id"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
+	Name      string         `json:"name" validate:"required,min=2,max=50" gorm:"not null"`
+	Email     string         `json:"email"      validate:"required,email" gorm:"unique;not null"`
+	Password  string         `json:"password"   validate:"required,min=8,max=120" gorm:"not null"`
+	IsAdmin   bool           `json:"is_admin"  validate:"required" gorm:"default:false"`
+}
+
+func (e *EntityUser) MarshalJSON() ([]byte, error) {
+	type Temp struct {
+		ID      uint   `json:"id"`
+		Name    string `json:"name"`
+		Email   string `json:"email"`
+		IsAdmin bool   `json:"is_admin"`
+	}
+
+	t := Temp{
+		ID:      e.ID,
+		Name:    e.Name,
+		Email:   e.Email,
+		IsAdmin: e.IsAdmin,
+	}
+
+	return json.Marshal(t)
 }
 
 func NewUser(userParam EntityUser) (*EntityUser, error) {
